@@ -19,6 +19,7 @@ Block Farm Editor is a visual content editor that enables flexible, block-based 
 ```
 dotnet add package BlockFarmEditor.Umbraco
 ```
+**Note: this is a composer file and should only be included once on the main project. use ```BlockFarmEditor.RCL``` for sub projects.
 
 This will add a Composition and Data Type of "Block Farm Editor"
 To begin using the page builder,
