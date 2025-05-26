@@ -25,7 +25,11 @@ To begin using the page builder,
 1. Add the composition to your Document Type.
 2. Add ```@addTagHelper *, BlockFarmEditor.RCL``` to your **_ViewImports.cshtml** file.
 3. Add ```<register-block-farm></register-block-farm>``` to the head section of your layout file.  This tag registers the front end javascript needed when in edit mode.
-4. Follow the Quick Start to get started building.  Note especially step 3.
+4. Retrieve the license.  See Licensing.
+5. Follow the Quick Start to get started building.  Note especially step 3.
+
+## Licensing. 
+Go to the Block Farm Editor settings dashboard.  Select your domain and click (Re)Validate.
 
 ## Quick Start
 
