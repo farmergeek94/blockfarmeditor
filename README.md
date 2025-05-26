@@ -16,6 +16,16 @@ Block Farm Editor is a visual content editor that enables flexible, block-based 
 
 ## Initial Install
 
+```
+dotnet add package BlockFarmEditor.Umbraco
+```
+
+This will add a Composition and Data Type of "Block Farm Editor"
+To begin using the page builder,
+1. Add the composition to your Document Type.
+2. Add ```@addTagHelper *, BlockFarmEditor.RCL``` to your **_ViewImports.cshtml** file.
+3. Add ```<register-block-farm></register-block-farm>``` to the head section of your layout file.  This tag registers the front end javascript needed when in edit mode.
+4. Follow the Quick Start to get started building.  Note especially step 3.
 
 ## Quick Start
 
