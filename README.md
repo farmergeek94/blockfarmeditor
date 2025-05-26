@@ -32,6 +32,8 @@ To begin using the page builder,
 Go to the Block Farm Editor settings dashboard.  Select your domain and click (Re)Validate.
 
 ## Quick Start
+Note, if you are going to package your components in seperate projects, do not add the nuget project ```BlockFarmEditor.Umbraco``` to those projects. 
+Instead add ```dotnet add package BlockFarmEditor.RCL```
 
 ### 1. Register Block Definitions
 
