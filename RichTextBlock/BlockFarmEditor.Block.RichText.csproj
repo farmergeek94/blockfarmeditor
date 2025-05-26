@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Title>Rich Text Block for Block Farm Editor</Title>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="C:\Users\jhess\.nuget\packages\blockfarmeditor.rcl\1.0.0\contentFiles\any\net9.0\appsettings-schema.json" />
+    <Content Remove="C:\Users\jhess\.nuget\packages\blockfarmeditor.rcl\1.0.0\contentFiles\any\net9.0\appsettings-schema.Umbraco.Cms.json" />
+    <Content Remove="C:\Users\jhess\.nuget\packages\blockfarmeditor.rcl\1.0.0\contentFiles\any\net9.0\umbraco-package-schema.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BlockFarmEditor.RCL" Version="1.0.0" />
+  </ItemGroup>
+
+
+
+
+</Project>
