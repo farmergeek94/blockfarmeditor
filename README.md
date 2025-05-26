@@ -4,7 +4,7 @@
 
 **Current Status:** Block Farm Editor is currently in beta and available for a **3-month rolling trial** period. 
 
-After the beta period, the product will transition to a **yearly licensing model**.  Currently targeting a $50 yearly license pre main doamin with an increase to $100 once feature complete.
+After the beta period, the product will transition to a **yearly licensing model**.  Currently targeting a $50 yearly license pre main domain with an increase to $100 once feature complete.
 
 If you want to start building sites with it, signup using the following domain registration hubspot form in order to be contacted when fully released.  [Domain Registration Form](https://40lw0b.share-na2.hsforms.com/2_On6_GUgTRS5rPA5LkRK4Q)
 
