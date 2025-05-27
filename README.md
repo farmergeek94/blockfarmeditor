@@ -82,7 +82,7 @@ public class TextBlockProperties : IBuilderProperties
     public string? Heading { get; set; }
     
     [BlockFarmEditorDataType("Richtext editor", "Content")]
-    public string? Content { get; set; }
+    public RichTextEditorValue? Content { get; set; }
 }
 ````
 
