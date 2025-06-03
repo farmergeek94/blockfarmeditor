@@ -51,6 +51,9 @@ Use assembly attributes to register your available blocks and containers:
 
 #### Block Registration & Container Registration
 The difference between a container and a block is purely syntactic, allowing for categorization on the front end.
+Either a view component type or a partial view can be used to render your block.
+There is also a PropertiesType which can be used to define the properties of the block.
+The icon list can use any of the icons specified in the essential icon registry.  [Icon Registry Essential](https://uui.umbraco.com/?path=/docs/symbols-icon-registry-essential--docs)
 
 ````csharp
 // Blocks
