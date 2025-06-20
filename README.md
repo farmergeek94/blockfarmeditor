@@ -95,26 +95,13 @@ public class TextBlockProperties : IBuilderProperties
 }
 ````
 
-#### Using Property Editors
-Using a BlockFarmEditorDataType allows you to control the property editor's config in the backoffice.
-````csharp
-public class ImageBlockProperties : IBuilderProperties
-{
-    [BlockFarmEditorPropertyEditor("Umbraco.MediaPicker3", "Image")]
-    public MediaWithCrops? Image { get; set; }
-    
-    [BlockFarmEditorPropertyEditor("Umbraco.TextBox", "Alt Text")]
-    public string? AltText { get; set; }
-}
-````
-
 ##### Adding a custom config to a BlockFarmEditorPropertyEditor
-Use a BlockFarmEditorPropertyEditor to specify the property editor's config on the backend.
+Use a BlockFarmEditorPropertyEditor to specify the property editor's config on the backend.  This will not affect the front end rendering.  The original Data Type's configuration will still be used when rendering on the front end.  This is for limiting or extending the property editors on backend.
 ````csharp
 public class AdvancedTextProperties : IBuilderProperties
 {
-    [BlockFarmEditorPropertyEditor("Umbraco.TextBox", "Title")]
-    [BlockFarmEditorPropertyEditorConfig(typeof(TextBoxConfig))]
+    [BlockFarmEditorDataType("Textstring", "Heading")]
+    [BlockFarmEditorDataTypeConfig(typeof(TextBoxConfig))]
     public string? Title { get; set; }
 }
 
@@ -146,6 +133,17 @@ Use the ```<block-area>``` tag helper to render blocks in your templates:
     <block-area identifier="footer-blocks"></block-area>
 </section>
 ````
+#### Limit available blocks for selection.  
+Pass an ```IEnumerable<string>``` to ```allowed-blocks``` to limit the types available for selection on that specific block.
+````html
+@{ 
+    IEnumerable<string> allowedBlocks = ["blockfarmeditor.bootstrap-row"];
+}
+<div class="main-content">
+    <block-area identifier="container" allowed-blocks="@allowedBlocks"></block-area>
+</div>
+````
+
 ## Key Features
 * **Assembly-based Registration:** Register blocks and containers using simple assembly attributes
 * **Flexible Property Editors:** Use existing Umbraco data types or property editors
