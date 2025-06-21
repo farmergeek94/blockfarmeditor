@@ -95,8 +95,8 @@ public class TextBlockProperties : IBuilderProperties
 }
 ````
 
-##### Adding a custom config to a BlockFarmEditorPropertyEditor
-Use a BlockFarmEditorPropertyEditor to specify the property editor's config on the backend.  This will not affect the front end rendering.  The original Data Type's configuration will still be used when rendering on the front end.  This is for limiting or extending the property editors on backend.
+##### Adding a custom config to a BlockFarmEditorDataType
+Use a BlockFarmEditorDataTypeConfig to specify the DataTypes's config on the backend.  This will not affect the front end rendering.  The original DataType's configuration will still be used when rendering on the front end.  This is for limiting or extending the property editors on backend.  Works very well for custom dropdown inputs.  The TextBoxConfig can make use of the root service provider allowing for Dependency Injection.
 ````csharp
 public class AdvancedTextProperties : IBuilderProperties
 {
