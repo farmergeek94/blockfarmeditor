@@ -68,7 +68,7 @@ Save reusable page and block layouts to accelerate initial page creation.
 
 ## History
 
-- **17.1.15**: Open sourced.
+- **17.1.15**: Licensed under MIT.
 
 - **17.1.14**: Styling updates and improvements.
 
