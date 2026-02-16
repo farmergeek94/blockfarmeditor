@@ -42,6 +42,11 @@
 
 Block Farm Editor is a visual content editor that enables flexible, block-based content editing. Build reusable content blocks and containers that can be easily managed and rendered throughout your Umbraco website.
 
+## Issue Tracking
+
+Use GitHub Issues for bugs, feature requests, and questions:
+https://github.com/farmergeek94/blockfarmeditor/issues
+
 ## Initial Install
 
 ```
