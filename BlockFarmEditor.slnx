@@ -1,0 +1,15 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/Solution Items/">
+    <File Path="readme.md" />
+  </Folder>
+  <Project Path="BlockFarmEditor/BlockFarmEditor.csproj" />
+  <Project Path="src/BlockFarmEditor.ClientScripts.RCL/BlockFarmEditor.ClientScripts.RCL.csproj" />
+  <Project Path="src/BlockFarmEditor.Umbraco.Core/BlockFarmEditor.Umbraco.Core.csproj" />
+  <Project Path="src/BlockFarmEditor.Umbraco/BlockFarmEditor.Umbraco.csproj" />
+  <Project Path="src/BlockFarmEditor.USync/BlockFarmEditor.USync.csproj" />
+</Solution>
