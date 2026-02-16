@@ -1,0 +1,40 @@
+{
+  "$schema": "https://marketplace.umbraco.com/umbraco-marketplace-schema.json",
+  "Title": "Block Farm Editor For Umbraco",
+  "Description": "Block Farm Editor for Umbraco. Allows for easy on-page editing using built-in Umbraco data types and property editors.",
+  "Category": "Editor Tools",
+  "DocumentationUrl": "https://blockfarmeditor.com/readme/",
+  "IssueTrackerUrl": "https://github.com/farmergeek94/blockfarmeditor/issues",
+  "LicenseTypes": [
+    "Free"
+  ],
+  "PackageType": "Package",
+  "AuthorDetails": {
+    "Name": "Joshua Hess",
+    "Description": "Creator and maintainer of Block Farm Editor.",
+    "Url": "https://blockfarmeditor.com/",
+    "Contributors": [
+      {
+        "Name": "Joshua Hess",
+        "Url": "https://github.com/farmergeek94"
+      }
+    ],
+    "SyncContributorsFromRepository": false
+  },
+  "Tags": [
+    "visual",
+    "editor",
+    "block",
+    "blocks",
+    "page-builder",
+    "layouts",
+    "tag-helpers"
+  ],
+  "RelatedPackages": [
+    {
+      "GroupTitle": "Add-ons",
+      "PackageId": "BlockFarmEditor.USync",
+      "Description": "uSync integration for Block Farm Editor (definitions and layouts)."
+    }
+  ]
+}

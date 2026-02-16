@@ -14,7 +14,7 @@
     <Copyright>Copyright © 2025 Joshua Hess (jhesstech@gmail.com). All rights reserved.  Block Farm Editor and its associated trademarks are the property of Joshua Hess.</Copyright>
     <PackageProjectUrl>https://blockfarmeditor.com/readme/</PackageProjectUrl>
     <PackageIcon>BlockFarmEditorIcon.png</PackageIcon>
-    <PackageTags>umbraco;visual;editor;block;blocks;builder;</PackageTags>
+    <PackageTags>umbraco;visual;editor;block;blocks;builder;umbraco-marketplace;</PackageTags>
     <PackageReleaseNotes>Styling updates and improvements.</PackageReleaseNotes>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
     <PackageLicenseFile>license.txt</PackageLicenseFile>
