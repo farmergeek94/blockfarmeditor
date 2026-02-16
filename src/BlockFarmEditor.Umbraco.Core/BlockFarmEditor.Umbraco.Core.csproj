@@ -1,0 +1,40 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+      <VersionPrefix>17.1.9</VersionPrefix>
+      <PackageIcon>BlockFarmEditorIcon.png</PackageIcon>
+      <PackageReadmeFile>readme.md</PackageReadmeFile>
+      <PackageReleaseNotes>Resolved core nuget upgrade.</PackageReleaseNotes>
+      <PackageOutputPath>../</PackageOutputPath>
+      <Title>Block Farm Editor Core</Title>
+      <Description>Block Farm Editor Core Files</Description>
+      <Copyright>© 2026 Joshua Hess. All rights reserved.</Copyright>
+      <PackageLicenseFile>license.txt</PackageLicenseFile>
+      
+  </PropertyGroup>
+
+  <ItemGroup>
+
+      <None Include="..\BlockFarmEditor.Umbraco\license.txt">
+          <Pack>True</Pack>
+          <PackagePath>\</PackagePath>
+      </None>
+    <None Include="..\BlockFarmEditor.Umbraco\BlockFarmEditorIcon.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\..\readme.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Umbraco.Cms" Version="17.1.0" />
+  </ItemGroup>
+
+</Project>

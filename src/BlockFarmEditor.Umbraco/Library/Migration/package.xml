@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<umbPackage>
+    <info>
+    <package>
+        <name>Block Farm Editor</name>
+    </package>
+    </info>
+    <DocumentTypes>
+        <DocumentType Folders="BlockFarmEditor" FolderKeys="0bc5f93e-fdd6-4d93-8f2e-604b14824388">
+            <Info>
+                <Name>Block Farm Editor</Name>
+                <Alias>blockFarmEditor</Alias>
+                <Key>7b4ac776-5716-4fd0-a953-7ff23143b0d4</Key>
+                <Icon>icon-layout</Icon>
+                <Thumbnail>folder.png</Thumbnail>
+                <Description>Composition that allows for the Block Farm to be added to a page</Description>
+                <AllowAtRoot>False</AllowAtRoot>
+                <ListView></ListView>
+                <IsElement>True</IsElement>
+                <Variations>Culture</Variations>
+                <Compositions />
+                <AllowedTemplates />
+                <DefaultTemplate></DefaultTemplate>
+            </Info>
+            <Structure />
+            <GenericProperties>
+                <GenericProperty>
+                    <Name>Block Farm Editor</Name>
+                    <Alias>blockfarmeditor_page_propertyeditor</Alias>
+                    <Key>8818b6e9-3b7b-4784-81c3-d0e1c287c1df</Key>
+                    <Type>blockfarmeditor_page_propertyeditor</Type>
+                    <Definition>98cc54c8-604d-49ad-a02c-1a5cac30cb94</Definition>
+                    <Tab Alias="blockFarmEditor">Block Farm Editor</Tab>
+                    <SortOrder>0</SortOrder>
+                    <Mandatory>False</Mandatory>
+                    <LabelOnTop>False</LabelOnTop>
+                    <MandatoryMessage></MandatoryMessage>
+                    <Validation></Validation>
+                    <ValidationRegExpMessage></ValidationRegExpMessage>
+                    <Description><![CDATA[The Block Farm definition for the page]]></Description>
+                    <Variations>Culture</Variations>
+                </GenericProperty>
+            </GenericProperties>
+            <Tabs>
+                <Tab>
+                    <Id>56</Id>
+                    <Key>5daeda77-e701-43c2-8e70-4d56763a1d43</Key>
+                    <Type>Group</Type>
+                    <Caption>Block Farm Editor</Caption>
+                    <Alias>blockFarmEditor</Alias>
+                    <SortOrder>0</SortOrder>
+                </Tab>
+            </Tabs>
+            <HistoryCleanupPolicy preventCleanup="false" />
+        </DocumentType>
+    </DocumentTypes>
+    <MediaTypes />
+    <Templates />
+    <Stylesheets />
+    <Scripts />
+    <PartialViews />
+    <DictionaryItems />
+    <Languages />
+    <DataTypes>
+        <DataType Name="Block Farm Editor" Id="blockfarmeditor_page_propertyeditor" EditorUiAlias="blockfarmeditor_page_propertyeditor" Definition="98cc54c8-604d-49ad-a02c-1a5cac30cb94" DatabaseType="Ntext" Configuration="{}" Folders="BlockFarmEditor" FolderKeys="6704d146-5dd1-47f5-bbf0-70fd9583a109" />
+    </DataTypes>
+    <MediaItems />
+</umbPackage>

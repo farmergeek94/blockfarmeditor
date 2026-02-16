@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Title>Block Farm Editor USync Package</Title>
+      <VersionPrefix>17.1.2</VersionPrefix>
+      <PackageOutputPath>..\</PackageOutputPath>
+      <Description>Package allowing full USync integration for BlockFarmEditor
+17.1.2 Switched to only pulling in the core library. </Description>
+      <PackageReadmeFile>README.md</PackageReadmeFile>
+      <PackageReleaseNotes>Switched to only pulling in the core library. </PackageReleaseNotes>
+      <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+      <Copyright>© 2026 Joshua Hess. All rights reserved.</Copyright>
+      <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="uSync" Version="17.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BlockFarmEditor.Umbraco.Core\BlockFarmEditor.Umbraco.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+</Project>

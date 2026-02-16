@@ -1,0 +1,17 @@
+﻿@using Umbraco.Cms.Web.Common.PublishedModels;
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage
+@{
+	Layout = "layout.cshtml";
+}
+<block-area identifier="banner"></block-area>
+<div class="container-fluid">
+	<h1>Example Layout</h1>
+	<block-area identifier="main"></block-area>
+
+	<div style="padding-top: 30px; padding-bottom: 30px;">
+		<block-area identifier="above-footer"></block-area>
+	</div>
+
+
+	<block-area identifier="after"></block-area>
+</div>

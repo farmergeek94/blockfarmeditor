@@ -1,0 +1,48 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+    <StaticWebAssetBasePath>App_Plugins/BlockFarmEditor.ClientScripts.RCL</StaticWebAssetBasePath>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Description>Supporting Client Library
+    </Description>
+    <PackageIcon>BlockFarmEditorIcon.png</PackageIcon>
+    <PackageLicenseFile>license.txt</PackageLicenseFile>
+    <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+    <VersionPrefix>17.1.14</VersionPrefix>
+    <PackageOutputPath>../</PackageOutputPath>
+    <PackageReadmeFile>readme.md</PackageReadmeFile>
+    <Title>Client Package for Block Farm Editor</Title>
+    <Copyright>© 2026 Joshua Hess. All rights reserved.</Copyright>
+    <PackageReleaseNotes>Styling updates and improvements.</PackageReleaseNotes>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="block-editor\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\BlockFarmEditor.Umbraco\BlockFarmEditorIcon.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\BlockFarmEditor.Umbraco\license.txt">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\..\readme.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+
+
+</Project>

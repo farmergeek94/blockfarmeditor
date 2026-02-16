@@ -1,0 +1,204 @@
+block-area {
+    display: flex;
+    flex-direction: column;
+    outline: 1px dotted #aaa;
+}
+
+block-area.horizontal {
+    flex-direction: row;
+}
+
+block-area.horizontal>.bfe--block-area-block {
+    flex: 1;
+}
+
+block-area.horizontal>.bfe--block-area-block>block-item>div {
+    width: 100% !important;
+}
+
+.bfe--block-area-block {
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.bfe--block-area-block.bfe--dragging {
+    opacity: 0.6;
+    cursor: move;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    z-index: 1001;
+}
+
+.bfe--block-area-block.bfe--drag-over-top {
+    cursor: move;
+    border-top: 3px solid rgb(27, 38, 79);
+    margin-top: -3px;
+}
+
+.bfe--block-area-block.bfe--drag-over-bottom {
+    cursor: move;
+    border-bottom: 3px solid rgb(27, 38, 79);
+    margin-bottom: -3px;;
+}
+
+.bfe--block-area-block.bfe--empty.bfe--drag-over-top,
+.bfe--block-area-block.bfe--empty.bfe--drag-over-bottom {
+    border: none;
+    background: rgba(33, 75, 175, 0.3);
+}
+
+add-block {
+    position: relative;
+    display: none;
+    transition: all 0.2s ease;
+    z-index: 10;
+}
+
+add-block[empty] {
+    opacity: 0.8;
+}
+
+block-area:hover>.bfe--block-area-block>add-block[empty] {
+    opacity: 1;
+}
+
+.bfe--block-area-block.bfe--show-hover-top>block-item>add-block.bfe--hover-top,
+.bfe--block-area-block.bfe--show-hover-bottom>block-item>add-block.bfe--hover-bottom,
+add-block[empty] {
+    display: block;
+}
+
+block-properties {
+    position: absolute;
+    top: -30px;
+    right: 0;
+    gap: 5px;
+    background: white;
+    padding: 5px !important;
+    border-radius: 3px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    display: none;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+    z-index: 9999;
+}
+
+block-properties.bfe--show, .bfe--block-area-block.bfe--empty:hover > block-properties {
+    display: flex;
+}
+
+block-item {
+    min-height: 42px;
+    display: block;
+}
+
+.bfe--block-parent-properties {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    width: 100%;
+}
+
+.bfe--block-parent-properties>.bfe--block-area-block-buttons-wrapper {
+    border-top: 1px #ccc solid;
+    padding-top: 5px !important;
+}
+
+/* Add Block */
+.bfe--block-area-add {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    background:  rgb(27, 38, 79);;
+    margin-right: 2px;
+    margin-left: 2px;
+    height: 0px;
+    outline: 2px solid  rgb(27, 38, 79);;
+}
+
+.bfe--block-area-add.bfe--empty {
+    width: 100%;
+    min-height: 200px;
+    background: transparent;
+    height: auto;
+    outline: none;
+    margin: 0;
+}
+
+.bfe--block-area-add>button.bfe--button-add {
+    background: rgb(27, 38, 79);
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 16px !important;
+    line-height: 16px !important;
+    padding: 4px !important;
+    border-radius: 3px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.bfe--button-add-first-item {
+    display: flex;
+}
+
+.bfe--block-area-add>button.bfe--button-add a {
+    color: white;
+}
+
+.bfe--block-area-add.has-parents>button.bfe--button-add>a.bfe--open-menu {
+    border-left: 1px solid rgba(255, 255, 255, 0.3);
+    padding-left: 3px !important;
+}
+
+.bfe--block-area-add>button.bfe--button-add:focus,
+.bfe--open-menu:focus {
+    outline: none;
+}
+
+.bfe--block-area-add .bfe--open-menu {
+    display: block;
+}
+
+.bfe--block-area-add .bfe--block-menu {
+    position: absolute;
+    top: 38px;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    background: rgb(27, 38, 79);
+    border-top-right-radius: 4px;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+
+.bfe--block-area-add .bfe--block-menu>.bfe--block-menu-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.bfe--block-area-add .bfe--block-menu>.bfe--block-menu-button, .bfe--block-area-add .bfe--block-menu>.bfe--block-menu-group>.bfe--block-menu-button {
+    color: white;
+    cursor: pointer;
+    font-size: 16px !important;
+    line-height: 16px !important;
+    border-bottom: 1px solid white;
+    white-space: nowrap;
+    padding: 4px 8px !important;
+    background: transparent;
+    border: none;
+    text-align: left;
+    transition: all 0.2s ease;
+}
+
+.bfe--block-area-add .bfe--block-menu>.bfe--block-menu-button:hover, .bfe--block-area-add .bfe--block-menu>.bfe--block-menu-group>.bfe--block-menu-button:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.bfe--block-area-add .bfe--block-menu>.bfe--block-menu-button:last-child, .bfe--block-area-add .bfe--block-menu>.bfe--block-menu-group>.bfe--block-menu-button:last-child {
+    border-bottom: none;
+}

@@ -1,0 +1,57 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Title>Block Farm Editor For Umbraco</Title>
+    <Authors>farmergeek94</Authors>
+    <Description>
+        Block Farm Editor For Umbraco.
+        Allows for easy on page editing using the built in Umbraco data types and property editors.
+    </Description>
+    <Copyright>Copyright © 2025 Joshua Hess (jhesstech@gmail.com). All rights reserved.  Block Farm Editor and its associated trademarks are the property of Joshua Hess.</Copyright>
+    <PackageProjectUrl>https://blockfarmeditor.com/readme/</PackageProjectUrl>
+    <PackageIcon>BlockFarmEditorIcon.png</PackageIcon>
+    <PackageTags>umbraco;visual;editor;block;blocks;builder;</PackageTags>
+    <PackageReleaseNotes>Styling updates and improvements.</PackageReleaseNotes>
+    <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+    <PackageLicenseFile>license.txt</PackageLicenseFile>
+    <VersionPrefix>17.1.14</VersionPrefix>
+    <PackageOutputPath>../</PackageOutputPath>
+    <PackageReadmeFile>readme.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Library\Migration\package.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\readme.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BlockFarmEditor.ClientScripts.RCL\BlockFarmEditor.ClientScripts.RCL.csproj" />
+    <ProjectReference Include="..\BlockFarmEditor.Umbraco.Core\BlockFarmEditor.Umbraco.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="BlockFarmEditorIcon.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Update="license.txt">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Umbraco.Cms" Version="17.1.0" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,109 @@
+{
+  "$schema": "../umbraco-package-schema.json",
+  "id": "blockfarmeditor_client_package",
+  "name": "Block Farm Editor",
+  "version": "2.0.1",
+  "allowPackageTelemetry": true,
+  "extensions": [
+    {
+      "type": "propertyEditorUi",
+      "alias": "blockfarmeditor_page_propertyeditor",
+      "name": "Block Farm Editor",
+      "element": "/App_Plugins/BlockFarmEditor.ClientScripts.RCL/property-editor/dist/blockfarmeditor-editor.js",
+      "elementName": "blockfarmeditor-page-propertyeditor",
+      "meta": {
+        "label": "Block Farm Editor",
+        "icon": "icon-list",
+        "group": "richContent",
+        "propertyEditorSchemaAlias": "Umbraco.Plain.Json"
+      }
+    },
+    {
+      "type": "dashboard",
+      "alias": "BlockFarmEditor.Settings.Dashboard",
+      "name": "Block Farm Settings",
+      "element": "/App_Plugins/BlockFarmEditor.ClientScripts.RCL/settings-dashboard/dist/settings-dashboard.js",
+      "elementName": "blockfarmeditor-settings-dashboard",
+      "weight": 30,
+      "meta": {
+        "label": "Block Farm Settings",
+        "pathname": "blockfarm-settings"
+      },
+      "conditions": [
+        {
+          "alias": "Umb.Condition.SectionAlias",
+          "match": "Umb.Section.Settings"
+        }
+      ]
+    },
+    {
+      "type": "condition",
+      "name": "Workspace Is Element Condition",
+      "alias": "BlockFarmEditor.Condition.IsElement",
+      "api": "/App_Plugins/BlockFarmEditor.ClientScripts.RCL/definitions-workspace/dist/element-condition.js"
+    },
+    {
+      "type": "workspaceView",
+      "alias": "BlockFarmEditor.Definitions.WorkspaceView",
+      "name": "Block Farm Editor",
+      "element": "/App_Plugins/BlockFarmEditor.ClientScripts.RCL/definitions-workspace/dist/definitions-workspace.js",
+      "elementName": "blockfarmeditor-definitions",
+      "weight": 120,
+      "icon": "icon-layout-dislocated",
+      "meta": {
+        "label": "Definition",
+        "icon": "icon-layout-dislocated",
+        "pathname": "blockfarmeditor-definition"
+      },
+      "conditions": [
+        {
+          "alias": "Umb.Condition.WorkspaceAlias",
+          "match": "Umb.Workspace.DocumentType"
+        },
+        {
+          "alias": "Umb.Condition.WorkspaceEntityIsNew",
+          "match": false
+        },
+        {
+          "alias": "BlockFarmEditor.Condition.IsElement",
+          "match": true
+        }
+      ]
+    },
+    {
+      "type": "modal",
+      "alias": "BlockFarmEditor.Modal",
+      "name": "Block Farm Editor Modal",
+      "element": "/App_Plugins/BlockFarmEditor.ClientScripts.RCL/property-editor/dist/blockfarmeditor-modal.js",
+      "elementName": "bf-blockfarm-editor-modal"
+    },
+    {
+      "type": "modal",
+      "alias": "BlockFarmEditor.Properties.Modal",
+      "name": "Block Properties Modal",
+      "element": "/App_Plugins/BlockFarmEditor.ClientScripts.RCL/property-editor/dist/blockfarmeditor-properties.js",
+      "elementName": "bf-block-properties-modal"
+    },
+    {
+      "type": "modal",
+      "alias": "BlockFarmEditor.AddBlock.Modal",
+      "name": "Add Block Modal",
+      "element": "/App_Plugins/BlockFarmEditor.ClientScripts.RCL/property-editor/dist/blockfarmeditor-add-block.js",
+      "elementName": "bf-add-block-modal"
+    },
+    {
+      "type": "modal",
+      "alias": "BlockFarmEditor.SaveLayout.Modal",
+      "name": "Save Layout Modal",
+      "element": "/App_Plugins/BlockFarmEditor.ClientScripts.RCL/property-editor/dist/blockfarmeditor-save-layout.js",
+      "elementName": "bf-save-layout-modal"
+    },
+    {
+      "type": "modal",
+      "alias": "BlockFarmEditor.UseLayout.Modal",
+      "name": "Use Layout Modal",
+      "element": "/App_Plugins/BlockFarmEditor.ClientScripts.RCL/property-editor/dist/blockfarmeditor-use-layout.js",
+      "elementName": "bf-use-layout-modal"
+    }
+  ]
+}

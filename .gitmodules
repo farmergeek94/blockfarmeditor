@@ -1,0 +1,3 @@
+[submodule "BlockFarmEditor.Bootstrap.Package"]
+	path = BlockFarmEditor.Bootstrap.Package
+	url = https://github.com/blockfarmeditor/BlockFarmEditor.Bootstrap.Package.git
