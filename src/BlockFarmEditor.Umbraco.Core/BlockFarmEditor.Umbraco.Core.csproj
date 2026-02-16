@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-      <VersionPrefix>17.1.9</VersionPrefix>
+      <VersionPrefix>17.1.15</VersionPrefix>
       <PackageIcon>BlockFarmEditorIcon.png</PackageIcon>
       <PackageReadmeFile>readme.md</PackageReadmeFile>
       <PackageReleaseNotes>Resolved core nuget upgrade.</PackageReleaseNotes>

@@ -18,7 +18,7 @@
     <PackageReleaseNotes>Styling updates and improvements.</PackageReleaseNotes>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
     <PackageLicenseFile>license.txt</PackageLicenseFile>
-    <VersionPrefix>17.1.14</VersionPrefix>
+    <VersionPrefix>17.1.15</VersionPrefix>
     <PackageOutputPath>../</PackageOutputPath>
     <PackageReadmeFile>readme.md</PackageReadmeFile>
   </PropertyGroup>
