@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-      <VersionPrefix>17.1.15</VersionPrefix>
+      <VersionPrefix>17.2.0</VersionPrefix>
       <PackageIcon>BlockFarmEditorIcon.png</PackageIcon>
       <PackageReadmeFile>readme.md</PackageReadmeFile>
       <PackageReleaseNotes>Resolved core nuget upgrade.</PackageReleaseNotes>
@@ -34,7 +34,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Umbraco.Cms" Version="17.1.0" />
+    <PackageReference Include="Umbraco.Cms" Version="17.2.0" />
   </ItemGroup>
 
 </Project>
