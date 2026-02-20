@@ -2,6 +2,9 @@
 
 All notable changes to this project are documented in this file.
 
+<details>
+<summary><strong>17.x</strong></summary>
+
 ## 17.2.1
 - Resolve client library static assets.
 
@@ -60,8 +63,18 @@ All notable changes to this project are documented in this file.
 ## 17.0.0
 - Updated for compatibility with Umbraco 17.
 
+</details>
+
+<details>
+<summary><strong>2.x</strong></summary>
+
 ## 2.0.0
 - Switched to using Element Document Types for blocks.
+
+</details>
+
+<details>
+<summary><strong>1.x</strong></summary>
 
 ## 1.2.0
 - Switched to using data types instead of property editors directly.
@@ -89,3 +102,5 @@ All notable changes to this project are documented in this file.
 
 ## 1.0.0
 - Initial release for testing.
+
+</details>
