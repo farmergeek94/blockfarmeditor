@@ -181,6 +181,18 @@ export class SettingsDashboard extends UmbLitElement implements UmbPropertyEdito
 
     render() {
         return html`
+    <uui-box class="text-left" headline="Definition Actions">
+      <div>
+        <p style="margin-top: 0;">Definitions will be saved under the folder {MainProject}/BlockFarmEditor/Definitions/
+          <br/>
+          This can be used to share definitions between projects, for backup purposes, or to build starter packages.
+      </p>
+        <div class="button-group">
+          <uui-button look="primary" @click="${this.#exportDefinitions}">Export</uui-button>
+          <uui-button look="primary" @click="${this.#importDefinitions}">Import</uui-button>
+        </div>
+      </div>
+    </uui-box>
     <uui-box class="text-left" headline="Layouts Management">
         <p style="margin-top: 0;">Layouts are reusable block structures that can be saved and applied to blocks.</p>
         <div class="search-container">
