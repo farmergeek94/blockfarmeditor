@@ -10,7 +10,7 @@
     <Description>Supporting Client Library
     </Description>
     <PackageIcon>BlockFarmEditorIcon.png</PackageIcon>
-    <PackageLicenseFile>license.txt</PackageLicenseFile>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
     <VersionPrefix>17.2.1</VersionPrefix>
     <PackageOutputPath>../</PackageOutputPath>
@@ -33,7 +33,7 @@
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
-    <None Include="..\..\license.txt">
+    <None Include="..\..\LICENSE">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
