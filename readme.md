@@ -1,26 +1,18 @@
-﻿<div align="center">
+﻿# Block Farm Editor
 
-# Block Farm Editor
+[![Docs](https://img.shields.io/badge/docs-blockfarmeditor.com-blue)](https://blockfarmeditor.com/readme)
+[![NuGet](https://img.shields.io/nuget/v/BlockFarmEditor.Umbraco.svg)](https://www.nuget.org/packages/BlockFarmEditor.Umbraco/)
+[![NuGet downloads](https://img.shields.io/nuget/dt/BlockFarmEditor.Umbraco.svg)](https://www.nuget.org/packages/BlockFarmEditor.Umbraco/)
+[![Issues](https://img.shields.io/github/issues/farmergeek94/blockfarmeditor.svg)](https://github.com/farmergeek94/blockfarmeditor/issues)
+[![License](https://img.shields.io/github/license/farmergeek94/blockfarmeditor.svg)](https://github.com/farmergeek94/blockfarmeditor)
 
 Block Farm Editor is a visual content editor for Umbraco that enables flexible, block-based content editing.
 
 Build reusable content blocks and containers that can be managed and rendered throughout your website.
 
-<p>
-  <a href="https://blockfarmeditor.com/readme"><img alt="Docs" src="https://img.shields.io/badge/docs-blockfarmeditor.com-blue" /></a>
-  <a href="https://www.nuget.org/packages/BlockFarmEditor.Umbraco/"><img alt="NuGet" src="https://img.shields.io/nuget/v/BlockFarmEditor.Umbraco.svg" /></a>
-  <a href="https://www.nuget.org/packages/BlockFarmEditor.Umbraco/"><img alt="NuGet downloads" src="https://img.shields.io/nuget/dt/BlockFarmEditor.Umbraco.svg" /></a>
-  <a href="https://github.com/farmergeek94/blockfarmeditor/issues"><img alt="Issues" src="https://img.shields.io/github/issues/farmergeek94/blockfarmeditor.svg" /></a>
-  <a href="https://github.com/farmergeek94/blockfarmeditor"><img alt="License" src="https://img.shields.io/github/license/farmergeek94/blockfarmeditor.svg" /></a>
-</p>
-
-<p>
-  <a href="https://blockfarmeditor.com/readme"><strong>Docs</strong></a>
-  ·
-  <a href="https://github.com/farmergeek94/blockfarmeditor/issues"><strong>Issue Tracker</strong></a>
-</p>
-
-</div>
+**Quick links**
+- Docs: https://blockfarmeditor.com/readme
+- Issue tracker: https://github.com/farmergeek94/blockfarmeditor/issues
 
 ## Table of contents
 - [Install](#install)
@@ -98,9 +90,7 @@ Docs: https://blockfarmeditor.com/readme/layouts/
 - **Container Support:** Create nested block structures with container blocks
 
 ## History
-
-<details>
-<summary><strong>Release notes</strong></summary>
+### Recent releases
 
 - **17.2.1**: Resolve client library static assets.
 - **17.2.0**: Updated Umbraco to 17.2.0.
@@ -112,31 +102,5 @@ Docs: https://blockfarmeditor.com/readme/layouts/
 - **17.1.10**: Resolved composition propertygroups.
 - **17.1.9**: Resolved core nuget upgrade.
 - **17.1.8**: Additional membership changes.
-- **17.1.7**: Resolved an issue for logged in members.
-- **17.1.6**: Resolved a position issue.
-- **17.1.5**: Locking down some more styles.
-- **17.1.4**: Changed some styling.
-- **17.1.3**: Resolved an issue with saving block definitions.
-- **17.1.2**:
-  - Bug fixes related to layout saving.
-  - Minor enhancements to layout handling.
-- **17.1.0**: Added support for saving layouts.
-- **17.0.1**: Converted layout handling to use `IEntity`.
-- **17.0.0**: Updated for compatibility with Umbraco 17.
-- **2.0.0**: Switched to using Element Document Types for blocks.
-- **1.2.0**:
-  - Switched to using data types instead of property editors directly.
-  - Added `allowed-blocks` support to the tag helper.
-- **1.1.2**: Resolved an issue with the block list.
-- **1.1.1**: Fixed a movement issue with sibling areas.
-- **1.1.0**:
-  - Added the “show layers” feature.
-  - Stabilized block movement behavior.
-- **1.0.4**: Fully integrated Umbraco value editors and converters.
-- **1.0.3**: Added parent block editing functionality.
-- **1.0.2**:
-  - Implemented the `AddBlockFarmEditor` method.
-  - Removed the Composer (to be reintroduced in a separate project).
-- **1.0.0**: Initial release for testing.
 
-</details>
+Full changelog: https://github.com/farmergeek94/blockfarmeditor/blob/main/CHANGELOG.md
