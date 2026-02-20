@@ -15,10 +15,10 @@
     <PackageProjectUrl>https://blockfarmeditor.com/readme/</PackageProjectUrl>
     <PackageIcon>BlockFarmEditorIcon.png</PackageIcon>
     <PackageTags>umbraco;visual;editor;block;blocks;builder;umbraco-marketplace;</PackageTags>
-    <PackageReleaseNotes>Update to Umbraco 17.2.0</PackageReleaseNotes>
+    <PackageReleaseNotes>Resolve client library static assets</PackageReleaseNotes>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
     <PackageLicenseFile>license.txt</PackageLicenseFile>
-    <VersionPrefix>17.2.0</VersionPrefix>
+    <VersionPrefix>17.2.1</VersionPrefix>
     <PackageOutputPath>../</PackageOutputPath>
     <PackageReadmeFile>readme.md</PackageReadmeFile>
   </PropertyGroup>
@@ -44,7 +44,7 @@
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
-    <None Update="license.txt">
+    <None Include="..\..\license.txt">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>

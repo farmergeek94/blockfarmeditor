@@ -12,12 +12,12 @@
     <PackageIcon>BlockFarmEditorIcon.png</PackageIcon>
     <PackageLicenseFile>license.txt</PackageLicenseFile>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-    <VersionPrefix>17.2.0</VersionPrefix>
+    <VersionPrefix>17.2.1</VersionPrefix>
     <PackageOutputPath>../</PackageOutputPath>
     <PackageReadmeFile>readme.md</PackageReadmeFile>
     <Title>Client Package for Block Farm Editor</Title>
     <Copyright>© 2026 Joshua Hess. All rights reserved.</Copyright>
-    <PackageReleaseNotes>Update to Umbraco 17.2.0</PackageReleaseNotes>
+    <PackageReleaseNotes>Resolve error with static assets</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
@@ -33,7 +33,7 @@
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
-    <None Include="..\BlockFarmEditor.Umbraco\license.txt">
+    <None Include="..\..\license.txt">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>

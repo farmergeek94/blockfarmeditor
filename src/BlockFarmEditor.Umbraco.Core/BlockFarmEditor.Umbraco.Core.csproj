@@ -19,7 +19,7 @@
 
   <ItemGroup>
 
-      <None Include="..\BlockFarmEditor.Umbraco\license.txt">
+      <None Include="..\..\license.txt">
           <Pack>True</Pack>
           <PackagePath>\</PackagePath>
       </None>
