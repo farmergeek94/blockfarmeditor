@@ -91,7 +91,7 @@ Docs: https://blockfarmeditor.com/readme/layouts/
 
 ## History
 ### Recent releases
-
+- **17.2.2**: Added the Definition Actions back in.
 - **17.2.1**: Resolve client library static assets.
 - **17.2.0**: Updated Umbraco to 17.2.0.
 - **17.1.15**: Licensed under MIT.

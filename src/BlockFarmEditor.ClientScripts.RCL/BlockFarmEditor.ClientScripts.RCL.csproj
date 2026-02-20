@@ -12,12 +12,12 @@
     <PackageIcon>BlockFarmEditorIcon.png</PackageIcon>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-    <VersionPrefix>17.2.1</VersionPrefix>
+    <VersionPrefix>17.2.2</VersionPrefix>
     <PackageOutputPath>../</PackageOutputPath>
     <PackageReadmeFile>readme.md</PackageReadmeFile>
     <Title>Client Package for Block Farm Editor</Title>
     <Copyright>© 2026 Joshua Hess. All rights reserved.</Copyright>
-    <PackageReleaseNotes>Resolve error with static assets</PackageReleaseNotes>
+    <PackageReleaseNotes>Added the Definition Actions back in.</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
