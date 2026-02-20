@@ -15,7 +15,7 @@
     <PackageProjectUrl>https://blockfarmeditor.com/readme/</PackageProjectUrl>
     <PackageIcon>BlockFarmEditorIcon.png</PackageIcon>
     <PackageTags>umbraco;visual;editor;block;blocks;builder;umbraco-marketplace;</PackageTags>
-    <PackageReleaseNotes>Styling updates and improvements.</PackageReleaseNotes>
+    <PackageReleaseNotes>Update to Umbraco 17.2.0</PackageReleaseNotes>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
     <PackageLicenseFile>license.txt</PackageLicenseFile>
     <VersionPrefix>17.2.0</VersionPrefix>

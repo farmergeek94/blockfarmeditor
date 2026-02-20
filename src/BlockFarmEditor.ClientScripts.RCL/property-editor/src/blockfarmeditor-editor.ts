@@ -10,7 +10,7 @@ import { UmbLitElement } from '@umbraco-cms/backoffice/lit-element';
 import { BLOCKFARMEDITOR_MODAL, type BlockFarmEditorModalData, type BlockFarmEditorModalResult } from './tokens/blockfarm-editor-modal.token.ts';
 import { UmbModalRouteRegistrationController } from '@umbraco-cms/backoffice/router';
 import { UMB_VARIANT_CONTEXT } from '@umbraco-cms/backoffice/variant';
-import { UMB_DOCUMENT_BLUEPRINT_WORKSPACE_CONTEXT, type UmbDocumentBlueprintWorkspaceContext, type UmbDocumentBlueprintDetailModel  } from '@umbraco-cms/backoffice/document-blueprint';
+import { UMB_DOCUMENT_BLUEPRINT_WORKSPACE_CONTEXT, type UmbDocumentBlueprintWorkspaceContext  } from '@umbraco-cms/backoffice/document-blueprint';
 
 /**
  * An example element.

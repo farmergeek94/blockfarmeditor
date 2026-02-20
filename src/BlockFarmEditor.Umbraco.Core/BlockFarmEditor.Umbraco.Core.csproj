@@ -8,7 +8,7 @@
       <VersionPrefix>17.2.0</VersionPrefix>
       <PackageIcon>BlockFarmEditorIcon.png</PackageIcon>
       <PackageReadmeFile>readme.md</PackageReadmeFile>
-      <PackageReleaseNotes>Resolved core nuget upgrade.</PackageReleaseNotes>
+    <PackageReleaseNotes>Update to Umbraco 17.2.0</PackageReleaseNotes>
       <PackageOutputPath>../</PackageOutputPath>
       <Title>Block Farm Editor Core</Title>
       <Description>Block Farm Editor Core Files</Description>

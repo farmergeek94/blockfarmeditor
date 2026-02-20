@@ -12,12 +12,12 @@
     <PackageIcon>BlockFarmEditorIcon.png</PackageIcon>
     <PackageLicenseFile>license.txt</PackageLicenseFile>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-    <VersionPrefix>17.1.15</VersionPrefix>
+    <VersionPrefix>17.2.0</VersionPrefix>
     <PackageOutputPath>../</PackageOutputPath>
     <PackageReadmeFile>readme.md</PackageReadmeFile>
     <Title>Client Package for Block Farm Editor</Title>
     <Copyright>© 2026 Joshua Hess. All rights reserved.</Copyright>
-    <PackageReleaseNotes>Styling updates and improvements.</PackageReleaseNotes>
+    <PackageReleaseNotes>Update to Umbraco 17.2.0</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>

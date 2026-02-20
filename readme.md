@@ -67,7 +67,7 @@ Save reusable page and block layouts to accelerate initial page creation.
 * **Container Support:** Create nested block structures with container blocks
 
 ## History
-
+- **17.2.0**: Updated Umbraco to 17.2.0.
 - **17.1.15**: Licensed under MIT.
 
 - **17.1.14**: Styling updates and improvements.
