@@ -15,10 +15,10 @@
     <PackageProjectUrl>https://blockfarmeditor.com/readme/</PackageProjectUrl>
     <PackageIcon>BlockFarmEditorIcon.png</PackageIcon>
     <PackageTags>umbraco;visual;editor;block;blocks;builder;umbraco-marketplace;</PackageTags>
-    <PackageReleaseNotes>Added the Definition Actions back in.</PackageReleaseNotes>
+    <PackageReleaseNotes>Resolved an issue when there are no property groups.</PackageReleaseNotes>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <VersionPrefix>17.2.2</VersionPrefix>
+    <VersionPrefix>17.2.3</VersionPrefix>
     <PackageOutputPath>../</PackageOutputPath>
     <PackageReadmeFile>readme.md</PackageReadmeFile>
   </PropertyGroup>

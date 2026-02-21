@@ -204,6 +204,17 @@ namespace BlockFarmEditor.Umbraco.Library.Services
                 var groups = dto.ContentType.CompositionPropertyGroups
                     .Where(x => x.Type == PropertyGroupType.Group);
 
+                if(!groups.Any() && dto.ContentType.CompositionPropertyTypes.Any())
+                {
+                    groups = [new PropertyGroup(false)
+                    {
+                        Alias = "properties",
+                        Name = "Properties",
+                        Type = PropertyGroupType.Group,
+                        PropertyTypes = new PropertyTypeCollection(false, dto.ContentType.CompositionPropertyTypes)
+                    }];
+                }
+
                 // if we have orphaned groups, display the Generic Tab and only if we have tabs period.  
                 if(orphanGroups.Count != 0 && tabs.Any())
                 {
