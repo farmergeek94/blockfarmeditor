@@ -6,9 +6,12 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Umbraco.Cms.Core.Models.PublishedContent;
+using Umbraco.Cms.Core.Routing;
+using Umbraco.Cms.Core.Services;
 using Umbraco.Cms.Core.Web;
 using Umbraco.Cms.Infrastructure.Persistence;
 using Umbraco.Cms.Web.Common.Authorization;
+using Umbraco.Cms.Web.Common.Routing;
 
 namespace BlockFarmEditor.Umbraco.Controllers
 {
@@ -16,7 +19,8 @@ namespace BlockFarmEditor.Umbraco.Controllers
         , IBlockFarmEditorContext blockFarmEditorContext
         , IBlockDefinitionService blockDefinitionService
         , IBlockFarmEditorLayoutService blockFarmEditorLayoutService
-        , IUmbracoDatabaseFactory umbracoDatabaseFactory) : Controller
+        , IUmbracoDatabaseFactory umbracoDatabaseFactory
+        , IFileService fileService) : Controller 
     {
         [Authorize]
         public async Task<IActionResult> RenderBlock([FromRoute] Guid id, [FromQuery] string? culture)
@@ -27,10 +31,25 @@ namespace BlockFarmEditor.Umbraco.Controllers
                 string bodyString = await reader.ReadToEndAsync();
 
                 using var context = umbracoContextFactory.EnsureUmbracoContext();
-                var content = await context.UmbracoContext.Content.GetByIdAsync(id, true);
+                var umbracoContext = context.UmbracoContext;
+
+                var content = await umbracoContext.Content!.GetByIdAsync(id);
                 if (content != null)
                 {
-                    await blockFarmEditorContext.SetPageDefinition(context.UmbracoContext, content, Request.Host.Host, culture: culture, true, true);
+                    var url = content.Url(culture, UrlMode.Absolute);
+
+                    // Manually setup the PublishedRequest for this content so that it can be used in ViewComponents and other places that rely on the current request's content
+                    var publishedRequest = new PublishedRequestBuilder(new Uri(url), fileService)
+                        .SetPublishedContent(content)
+                        .SetCulture(culture)
+                        .Build();
+
+                    umbracoContext.PublishedRequest = publishedRequest;
+
+                    // Set UmbracoRouteValues so views/tag helpers can resolve the current page
+                    HttpContext.Features.Set(new UmbracoRouteValues(publishedRequest, ControllerContext.ActionDescriptor));
+
+                    await blockFarmEditorContext.SetPageDefinition(umbracoContext, content, Request.Host.Host, culture: culture, true, true);
 
                     var jsonNode = JsonSerializer.Deserialize<JsonNode>(bodyString, blockDefinitionService.JsonSerializerReaderOptions);
                     if (jsonNode != null)
