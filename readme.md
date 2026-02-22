@@ -91,6 +91,7 @@ Docs: https://blockfarmeditor.com/readme/layouts/
 
 ## History
 ### Recent releases
+- **17.2.4**: Assembly loading improvements and ViewComponent bugfix.
 - **17.2.3**: Resolved an issue when there are no property groups.
 - **17.2.2**: Added the Definition Actions back in.
 - **17.2.1**: Resolve client library static assets.
