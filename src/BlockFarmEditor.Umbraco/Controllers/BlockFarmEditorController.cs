@@ -2,6 +2,7 @@
 using BlockFarmEditor.Umbraco.Core.Models.BuilderModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -20,7 +21,8 @@ namespace BlockFarmEditor.Umbraco.Controllers
         , IBlockDefinitionService blockDefinitionService
         , IBlockFarmEditorLayoutService blockFarmEditorLayoutService
         , IUmbracoDatabaseFactory umbracoDatabaseFactory
-        , IFileService fileService) : Controller 
+        , IFileService fileService
+        , ILogger<BlockFarmEditorController> logger) : Controller 
     {
         [Authorize]
         public async Task<IActionResult> RenderBlock([FromRoute] Guid id, [FromQuery] string? culture)
@@ -29,6 +31,8 @@ namespace BlockFarmEditor.Umbraco.Controllers
             {
                 using var reader = new StreamReader(Request.Body, encoding: Encoding.UTF8, leaveOpen: true);
                 string bodyString = await reader.ReadToEndAsync();
+                Request.Body.Position = 0; // Reset for potential re-read
+
 
                 using var context = umbracoContextFactory.EnsureUmbracoContext();
                 var umbracoContext = context.UmbracoContext;
@@ -69,8 +73,9 @@ namespace BlockFarmEditor.Umbraco.Controllers
 
             }
             catch (Exception ex)
-            {
-                return Content($"<div>Error: {ex.Message}<div>");
+            { 
+                logger.LogError(ex, "Error rendering a block on page {BlockId}", id);
+                return Content("<div>An error occurred rendering the block</div>");
             }
         }
 
