@@ -14,11 +14,13 @@ Automates version bumping and release note updates for BlockFarmEditor projects.
 
 2. **Ask for new version number:**  
    - Prompt: “Enter the new version number (or type ‘auto’ to auto-increment).”
+   - Use a constistent release version based on the 
 
 3. **Ask for release notes:**  
    - Prompt: “Enter the PackageReleaseNotes comment for this release.”
 
 4. **Update .csproj files:**  
+   - Automatically select the BlockFarmEditor.Umbraco project always
    - For each selected project:  
      - Update `<VersionPrefix>` to the new version.  
      - Update `<PackageReleaseNotes>` with the new comment.
