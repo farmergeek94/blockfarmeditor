@@ -15,10 +15,10 @@
     <PackageProjectUrl>https://blockfarmeditor.com/readme/</PackageProjectUrl>
     <PackageIcon>BlockFarmEditorIcon.png</PackageIcon>
     <PackageTags>umbraco;visual;editor;block;blocks;builder;umbraco-marketplace;</PackageTags>
-    <PackageReleaseNotes>Added support for published content and culture in block viewcomponents.</PackageReleaseNotes>
+    <PackageReleaseNotes>Removed stream reset.</PackageReleaseNotes>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <VersionPrefix>17.2.5</VersionPrefix>
+    <VersionPrefix>17.2.6</VersionPrefix>
     <PackageOutputPath>../</PackageOutputPath>
     <PackageReadmeFile>readme.md</PackageReadmeFile>
   </PropertyGroup>

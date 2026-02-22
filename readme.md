@@ -91,6 +91,7 @@ Docs: https://blockfarmeditor.com/readme/layouts/
 
 ## History
 ### Recent releases
+- **17.2.6**: Removed stream reset.
 - **17.2.5**: Added support for published content and culture in block viewcomponents.
 - **17.2.4**: Assembly loading improvements and ViewComponent bugfix.
 - **17.2.3**: Resolved an issue when there are no property groups.

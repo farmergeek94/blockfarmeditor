@@ -31,7 +31,6 @@ namespace BlockFarmEditor.Umbraco.Controllers
             {
                 using var reader = new StreamReader(Request.Body, encoding: Encoding.UTF8, leaveOpen: true);
                 string bodyString = await reader.ReadToEndAsync();
-                Request.Body.Position = 0; // Reset for potential re-read
 
 
                 using var context = umbracoContextFactory.EnsureUmbracoContext();
