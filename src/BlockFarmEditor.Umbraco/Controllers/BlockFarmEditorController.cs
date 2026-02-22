@@ -65,7 +65,7 @@ namespace BlockFarmEditor.Umbraco.Controllers
 
                 if (definition != null)
                 {
-                    if (definition.Type == "ViewComponent" && definition.DefinitionAttribute?.ViewComponentType != null)
+                    if (definition.DefinitionAttribute?.ViewComponentType != null)
                     {
                         // Grab the method to invoke
 

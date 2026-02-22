@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
 using System.Reflection;
 using System.Text.Json;
+using Umbraco.Cms.Core.Composing;
 using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.Models.ContentTypeEditing;
 using Umbraco.Cms.Core.Scoping;
@@ -19,40 +20,41 @@ using Umbraco.Cms.Infrastructure.Persistence;
 namespace BlockFarmEditor.Umbraco.Library.Services
 {
     internal class BlockDefinitionService(
-        IServiceProvider serviceProvider, 
-        IDataTypeService dataTypeService, 
+        IServiceProvider serviceProvider,
+        IDataTypeService dataTypeService,
         ILogger<BlockDefinitionService> logger,
         ICoreScopeProvider coreScopeProvider,
         IUmbracoDatabaseFactory umbracoDatabaseFactory,
-        IContentTypeService contentTypeService) : IBlockDefinitionService
+        IContentTypeService contentTypeService,
+        ITypeFinder typeFinder) : IBlockDefinitionService
     {
-        private readonly ConcurrentDictionary<string, BlockFarmEditorDefinitionAttribute> _typeMap = new();
-        private readonly ConcurrentDictionary<string, IEnumerable<BlockFarmEditorConfigurationAttribute>> _configMap = new();
+        private ConcurrentDictionary<string, BlockFarmEditorDefinitionAttribute>? _typeMap;
+        private ConcurrentDictionary<string, IEnumerable<BlockFarmEditorConfigurationAttribute>>? _configMap;
 
-        private readonly ConcurrentDictionary<Guid, BlockFarmEditorDefinitionExpanded> _blockFarmEditorDefinition = new();
-        private readonly object _initializationLock = new object();
+        private ConcurrentDictionary<Guid, BlockFarmEditorDefinitionExpanded>? _blockFarmEditorDefinition;
+        private readonly object _initializationLock = new();
 
         private Dictionary<string, BlockFarmEditorDefinitionAttribute> GetTypeMap()
         {
-            if (_typeMap.Count == 0)
+            if (_typeMap == null)
             {
                 lock (_initializationLock)
                 {
-                    if (_typeMap.Count == 0)
+                    if (_typeMap == null)
                     {
+                        _typeMap = new();
                         var typeToSearch = typeof(BlockFarmEditorDefinitionAttribute);
-                        Assembly[] _assemblies = AppDomain.CurrentDomain.GetAssemblies();
-                        var attributes = _assemblies.SelectMany(a => a.GetCustomAttributes(typeToSearch, true));
 
-                        var attrs = attributes.Cast<BlockFarmEditorDefinitionAttribute>();
+                        // Use Umbraco's ITypeFinder instead of AppDomain
+                        var attributes = typeFinder.AssembliesToScan
+                            .SelectMany(a => a.GetCustomAttributes(typeToSearch, true))
+                            .OfType<BlockFarmEditorDefinitionAttribute>();
 
-                        foreach(var attr in attrs)
+                        foreach (var attribute in attributes)
                         {
-                            // Register the attribute identifier
-                            // Add to the type map
-                            if(!_typeMap.TryAdd(attr.Identifier, attr))
+                            if (!_typeMap.TryAdd(attribute.Identifier, attribute))
                             {
-                                throw new InvalidOperationException($"The identifier '{attr.Identifier}' is already registered as a BlockFarmEditor Block.");
+                                logger.LogWarning("Duplicate BlockFarmEditorDefinitionAttribute found for identifier '{Identifier}'.", attribute.Identifier);
                             }
                         }
                     }
@@ -63,18 +65,22 @@ namespace BlockFarmEditor.Umbraco.Library.Services
 
         public Dictionary<string, IEnumerable<BlockFarmEditorConfigurationAttribute>> GetConfigMaps()
         {
-            if (_configMap.Count == 0)
+            if (_configMap == null)
             {
                 lock (_initializationLock)
                 {
-                    if (_configMap.Count == 0)
+                    if (_configMap == null)
                     {
-                        var typeToSearch = typeof(BlockFarmEditorConfigurationAttribute);
-                        Assembly[] _assemblies = AppDomain.CurrentDomain.GetAssemblies();
-                        var attributes = _assemblies.SelectMany(a => a.GetCustomAttributes(typeToSearch, true));
+                        _configMap = new();
 
-                        var attrs = attributes.Cast<BlockFarmEditorConfigurationAttribute>().GroupBy(x => x.Alias);
-                        foreach(var group in attrs)
+                        var typeToSearch = typeof(BlockFarmEditorConfigurationAttribute);
+                         // Use Umbraco's ITypeFinder instead of AppDomain
+                        var attributes = typeFinder.AssembliesToScan
+                            .SelectMany(a => a.GetCustomAttributes(typeToSearch, true))
+                            .OfType<BlockFarmEditorConfigurationAttribute>();
+
+                        var attrs = attributes.GroupBy(x => x.Alias);
+                        foreach (var group in attrs)
                         {
                             _configMap.TryAdd(group.Key, group);
                         }
@@ -83,10 +89,10 @@ namespace BlockFarmEditor.Umbraco.Library.Services
             }
             return _configMap.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
         }
-        
+
         public void ClearCache()
         {
-            _blockFarmEditorDefinition.Clear();
+            _blockFarmEditorDefinition = null;
         }
 
         public IDictionary<Guid, BlockFarmEditorDefinitionExpanded> RetrieveBlockFarmEditorDefinitions(bool force = false)
@@ -96,13 +102,14 @@ namespace BlockFarmEditor.Umbraco.Library.Services
                 ClearCache();
             }
 
-            if (_blockFarmEditorDefinition.Count == 0)
+            if (_blockFarmEditorDefinition == null)
             {
                 lock (_initializationLock)
                 {
                     // Double-check pattern: verify the collection is still empty after acquiring the lock
-                    if (_blockFarmEditorDefinition.Count == 0)
+                    if (_blockFarmEditorDefinition == null)
                     {
+                        _blockFarmEditorDefinition = new();
                         using var scope = coreScopeProvider.CreateCoreScope();
                         using var umbracoDatabase = umbracoDatabaseFactory.CreateDatabase();
                         var query = umbracoDatabase.Query<BlockFarmEditorDefinitionDTO>();
@@ -123,7 +130,7 @@ namespace BlockFarmEditor.Umbraco.Library.Services
                             item.DefinitionAttribute = typeMaps.GetValueOrDefault(item.ContentTypeAlias);
                             item.ContentType = contentTypes.GetValueOrDefault(item.ContentTypeAlias);
                             item.PropertyConfigs = configMaps.GetValueOrDefault(item.ContentTypeAlias) ?? [];
-                            if(item.ContentType != null)
+                            if (item.ContentType != null)
                                 _blockFarmEditorDefinition.TryAdd(item.ContentType.Key, item);
                         }
                     }
@@ -204,7 +211,7 @@ namespace BlockFarmEditor.Umbraco.Library.Services
                 var groups = dto.ContentType.CompositionPropertyGroups
                     .Where(x => x.Type == PropertyGroupType.Group);
 
-                if(!groups.Any() && dto.ContentType.CompositionPropertyTypes.Any())
+                if (!groups.Any() && dto.ContentType.CompositionPropertyTypes.Any())
                 {
                     groups = [new PropertyGroup(false)
                     {
@@ -216,7 +223,7 @@ namespace BlockFarmEditor.Umbraco.Library.Services
                 }
 
                 // if we have orphaned groups, display the Generic Tab and only if we have tabs period.  
-                if(orphanGroups.Count != 0 && tabs.Any())
+                if (orphanGroups.Count != 0 && tabs.Any())
                 {
 
                     tabs = tabs.Prepend(new PropertyGroup(false)
