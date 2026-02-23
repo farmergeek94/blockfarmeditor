@@ -33,7 +33,7 @@ namespace BlockFarmEditor.Umbraco.Core.DTO
         public List<BlockFarmEditorDefinitionDTO> Definitions { get; set; } = [];
 
         /// <summary>
-        /// Umbraco element types linked to the definitions.
+        /// Umbraco element types linked to the definitions (includes compositions).
         /// </summary>
         [DataMember]
         [XmlArray("ElementTypes")]

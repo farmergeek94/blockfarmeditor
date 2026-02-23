@@ -82,7 +82,7 @@ namespace BlockFarmEditor.Umbraco.Controllers
         /// Import comprehensive package from ZIP file or server folder.
         /// </summary>
         /// <param name="file">Optional ZIP file to import</param>
-        /// <param name="overwriteElementTypes">Whether to overwrite existing element types</param>
+        /// <param name="overwriteElementTypes">Whether to overwrite existing element types (includes compositions)</param>
         /// <param name="overwriteBlockDefinitions">Whether to overwrite existing block definitions</param>
         /// <param name="overwritePartialViews">Whether to overwrite existing partial views</param>
         /// <param name="overwriteDataTypes">Whether to overwrite existing data types</param>

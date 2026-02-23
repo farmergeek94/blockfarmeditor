@@ -63,14 +63,26 @@ namespace BlockFarmEditor.Umbraco.Library.Services
             package.Definitions = definitionsList;
 
             // Collect element types and data types
-            var elementTypeAliases = definitionsList.Select(d => d.ContentTypeAlias).Distinct().ToList();
+            var elementTypeAliases = definitionsList.Select(d => d.ContentTypeAlias).Distinct().ToHashSet();
             var allElementTypes = contentTypeService.GetAllElementTypes();
             var relevantElementTypes = allElementTypes.Where(et => elementTypeAliases.Contains(et.Alias)).ToList();
 
             // Track data type keys to export
             var dataTypeKeys = new HashSet<Guid>();
+            
+            // Track all element types to export (including compositions)
+            var exportedAliases = new HashSet<string>();
+            var elementTypesToExport = new List<IContentType>();
 
+            // Collect all element types and their compositions recursively
             foreach (var elementType in relevantElementTypes)
+            {
+                CollectElementTypeAndCompositions(elementType, allElementTypes, exportedAliases, elementTypesToExport);
+            }
+
+            // Export all element types (sorted by dependency - compositions first)
+            var sortedElementTypes = SortByDependency(elementTypesToExport);
+            foreach (var elementType in sortedElementTypes)
             {
                 var exportDto = await MapContentTypeToExportDTOAsync(elementType);
                 package.ElementTypes.Add(exportDto);
@@ -79,15 +91,6 @@ namespace BlockFarmEditor.Umbraco.Library.Services
                 foreach (var propertyType in elementType.CompositionPropertyTypes)
                 {
                     dataTypeKeys.Add(propertyType.DataTypeKey);
-                }
-
-                // Add composition aliases
-                foreach (var composition in elementType.ContentTypeComposition)
-                {
-                    if (!elementTypeAliases.Contains(composition.Alias))
-                    {
-                        exportDto.CompositionAliases.Add(composition.Alias);
-                    }
                 }
             }
 
@@ -277,9 +280,9 @@ namespace BlockFarmEditor.Umbraco.Library.Services
             }
 
             // Read element types
+            var elementTypeSerializer = new XmlSerializer(typeof(ContentTypeExportDTO));
             if (Directory.Exists(elementTypesPath))
             {
-                var elementTypeSerializer = new XmlSerializer(typeof(ContentTypeExportDTO));
                 foreach (var file in Directory.EnumerateFiles(elementTypesPath, "*.xml"))
                 {
                     try
@@ -493,8 +496,10 @@ namespace BlockFarmEditor.Umbraco.Library.Services
                 }
             }
 
-            // 2. Import element types
-            foreach (var elementTypeDto in package.ElementTypes)
+            // 2. Import element types (sorted by dependency - those with no compositions first)
+            var sortedElementTypes = SortContentTypesByDependency(package.ElementTypes);
+            
+            foreach (var elementTypeDto in sortedElementTypes)
             {
                 try
                 {
@@ -531,7 +536,26 @@ namespace BlockFarmEditor.Umbraco.Library.Services
                 }
             }
 
-            // 3. Import definitions
+            // 3. Link compositions to element types (must be done after all are created)
+            foreach (var elementTypeDto in sortedElementTypes)
+            {
+                if (elementTypeDto.CompositionAliases.Count == 0) continue;
+                
+                try
+                {
+                    var contentType = contentTypeService.Get(elementTypeDto.Alias);
+                    if (contentType != null)
+                    {
+                        await LinkCompositionsToContentType(contentType, elementTypeDto.CompositionAliases, currentUser);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "Failed to link compositions for element type: {Alias}", elementTypeDto.Alias);
+                }
+            }
+
+            // 4. Import definitions
             using var db = umbracoDatabaseFactory.CreateDatabase();
             foreach (var definitionDto in package.Definitions)
             {
@@ -566,7 +590,7 @@ namespace BlockFarmEditor.Umbraco.Library.Services
                 }
             }
 
-            // 4. Import partial views
+            // 5. Import partial views
             var viewsPath = Path.Combine(webHostEnvironment.ContentRootPath, "Views");
             foreach (var partialViewDto in package.PartialViews)
             {
@@ -618,6 +642,62 @@ namespace BlockFarmEditor.Umbraco.Library.Services
 
         #region Helper Methods
 
+        /// <summary>
+        /// Recursively collects an element type and all its compositions.
+        /// </summary>
+        private static void CollectElementTypeAndCompositions(
+            IContentType contentType,
+            IEnumerable<IContentType> allElementTypes,
+            HashSet<string> exportedAliases,
+            List<IContentType> elementTypesToExport)
+        {
+            if (!exportedAliases.Add(contentType.Alias)) return;
+
+            // First collect all compositions recursively
+            foreach (var composition in contentType.ContentTypeComposition)
+            {
+                var fullComposition = allElementTypes.FirstOrDefault(et => et.Alias == composition.Alias);
+                if (fullComposition != null)
+                {
+                    CollectElementTypeAndCompositions(fullComposition, allElementTypes, exportedAliases, elementTypesToExport);
+                }
+            }
+
+            // Then add this element type
+            elementTypesToExport.Add(contentType);
+        }
+
+        /// <summary>
+        /// Sorts content types by their dependencies so that compositions come before types that use them.
+        /// </summary>
+        private static List<IContentType> SortByDependency(List<IContentType> contentTypes)
+        {
+            var aliases = contentTypes.Select(c => c.Alias).ToHashSet();
+            var sorted = new List<IContentType>();
+            var processed = new HashSet<string>();
+
+            void Process(IContentType ct)
+            {
+                if (processed.Contains(ct.Alias)) return;
+
+                // Process dependencies first
+                foreach (var comp in ct.ContentTypeComposition)
+                {
+                    if (aliases.Contains(comp.Alias))
+                    {
+                        var dep = contentTypes.FirstOrDefault(c => c.Alias == comp.Alias);
+                        if (dep != null) Process(dep);
+                    }
+                }
+
+                processed.Add(ct.Alias);
+                sorted.Add(ct);
+            }
+
+            foreach (var ct in contentTypes) Process(ct);
+            return sorted;
+        }
+
         private async Task<Guid> GetCurrentUserIdAsync()
         {
             await Task.CompletedTask;
@@ -644,6 +724,68 @@ namespace BlockFarmEditor.Umbraco.Library.Services
                 }
             }
             return result;
+        }
+
+        /// <summary>
+        /// Links composition content types to a content type based on the aliases from the DTO.
+        /// </summary>
+        private async Task LinkCompositionsToContentType(IContentType contentType, List<string> compositionAliases, Guid currentUserKey)
+        {
+            var existingCompositionAliases = contentType.ContentTypeComposition.Select(c => c.Alias).ToHashSet();
+            var needsUpdate = false;
+
+            foreach (var compositionAlias in compositionAliases)
+            {
+                if (existingCompositionAliases.Contains(compositionAlias)) continue;
+
+                var composition = contentTypeService.Get(compositionAlias);
+                if (composition != null)
+                {
+                    contentType.AddContentType(composition);
+                    needsUpdate = true;
+                    logger.LogInformation("Linked composition {CompositionAlias} to {ContentTypeAlias}", compositionAlias, contentType.Alias);
+                }
+                else
+                {
+                    logger.LogWarning("Composition not found: {Alias} for content type {ContentTypeAlias}", compositionAlias, contentType.Alias);
+                }
+            }
+
+            if (needsUpdate)
+            {
+                await contentTypeService.UpdateAsync(contentType, currentUserKey);
+            }
+        }
+
+        /// <summary>
+        /// Sorts content types (DTOs) by their dependencies so that compositions come before types that use them.
+        /// </summary>
+        private static List<ContentTypeExportDTO> SortContentTypesByDependency(List<ContentTypeExportDTO> contentTypes)
+        {
+            var aliases = contentTypes.Select(c => c.Alias).ToHashSet();
+            var sorted = new List<ContentTypeExportDTO>();
+            var processed = new HashSet<string>();
+
+            void Process(ContentTypeExportDTO ct)
+            {
+                if (processed.Contains(ct.Alias)) return;
+
+                // Process dependencies first
+                foreach (var depAlias in ct.CompositionAliases)
+                {
+                    if (aliases.Contains(depAlias))
+                    {
+                        var dependency = contentTypes.FirstOrDefault(c => c.Alias == depAlias);
+                        if (dependency != null) Process(dependency);
+                    }
+                }
+
+                processed.Add(ct.Alias);
+                sorted.Add(ct);
+            }
+
+            foreach (var ct in contentTypes) Process(ct);
+            return sorted;
         }
 
         #endregion
@@ -679,26 +821,17 @@ namespace BlockFarmEditor.Umbraco.Library.Services
                 {
                     foreach (var propertyType in group.PropertyTypes)
                     {
-                        groupDto.PropertyTypes.Add(new PropertyTypeExportDTO
-                        {
-                            Key = propertyType.Key,
-                            Alias = propertyType.Alias,
-                            Name = propertyType.Name ?? propertyType.Alias,
-                            Description = propertyType.Description,
-                            SortOrder = propertyType.SortOrder,
-                            DataTypeKey = propertyType.DataTypeKey,
-                            Mandatory = propertyType.Mandatory,
-                            MandatoryMessage = propertyType.MandatoryMessage,
-                            ValidationRegExp = propertyType.ValidationRegExp,
-                            ValidationRegExpMessage = propertyType.ValidationRegExpMessage,
-                            VariesByCulture = propertyType.VariesByCulture(),
-                            VariesBySegment = propertyType.VariesBySegment(),
-                            LabelOnTop = propertyType.LabelOnTop ? 1 : 0
-                        });
+                        groupDto.PropertyTypes.Add(MapPropertyTypeToExportDTO(propertyType));
                     }
                 }
 
                 dto.PropertyGroups.Add(groupDto);
+            }
+
+            // Export property types that are not in any group
+            foreach (var propertyType in contentType.NoGroupPropertyTypes)
+            {
+                dto.NoGroupPropertyTypes.Add(MapPropertyTypeToExportDTO(propertyType));
             }
 
             foreach (var composition in contentType.ContentTypeComposition)
@@ -756,11 +889,7 @@ namespace BlockFarmEditor.Umbraco.Library.Services
                 AllowedAsRoot = dto.AllowedAsRoot
             };
 
-            // Set variation
-            ContentVariation variation = ContentVariation.Nothing;
-            if (dto.VariesByCulture) variation |= ContentVariation.Culture;
-            if (dto.VariesBySegment) variation |= ContentVariation.Segment;
-            contentType.Variations = variation;
+            contentType.Variations = GetContentVariation(dto.VariesByCulture, dto.VariesBySegment);
 
             // Add property groups and properties
             foreach (var groupDto in dto.PropertyGroups)
@@ -787,6 +916,16 @@ namespace BlockFarmEditor.Umbraco.Library.Services
                 contentType.PropertyGroups.Add(group);
             }
 
+            // Add property types that are not in any group
+            foreach (var propDto in dto.NoGroupPropertyTypes)
+            {
+                var propertyType = await CreatePropertyTypeFromDTO(propDto, importedDataTypes);
+                if (propertyType != null)
+                {
+                    contentType.AddPropertyType(propertyType);
+                }
+            }
+
             return contentType;
         }
 
@@ -797,11 +936,7 @@ namespace BlockFarmEditor.Umbraco.Library.Services
             contentType.Icon = dto.Icon;
             contentType.IsElement = dto.IsElement;
             contentType.AllowedAsRoot = dto.AllowedAsRoot;
-
-            ContentVariation variation = ContentVariation.Nothing;
-            if (dto.VariesByCulture) variation |= ContentVariation.Culture;
-            if (dto.VariesBySegment) variation |= ContentVariation.Segment;
-            contentType.Variations = variation;
+            contentType.Variations = GetContentVariation(dto.VariesByCulture, dto.VariesBySegment);
 
             // Update property groups
             foreach (var groupDto in dto.PropertyGroups)
@@ -839,17 +974,66 @@ namespace BlockFarmEditor.Umbraco.Library.Services
                     }
                     else
                     {
-                        existingProp.Name = propDto.Name;
-                        existingProp.Description = propDto.Description;
-                        existingProp.SortOrder = propDto.SortOrder;
-                        existingProp.Mandatory = propDto.Mandatory;
-                        existingProp.MandatoryMessage = propDto.MandatoryMessage;
-                        existingProp.ValidationRegExp = propDto.ValidationRegExp;
-                        existingProp.ValidationRegExpMessage = propDto.ValidationRegExpMessage;
-                        existingProp.LabelOnTop = propDto.LabelOnTop == 1;
+                        UpdatePropertyTypeFromDTO(existingProp, propDto);
                     }
                 }
             }
+
+            // Handle property types that are not in any group
+            foreach (var propDto in dto.NoGroupPropertyTypes)
+            {
+                var existingProp = contentType.PropertyTypes.FirstOrDefault(p => p.Alias == propDto.Alias);
+                if (existingProp == null)
+                {
+                    var propertyType = await CreatePropertyTypeFromDTO(propDto, importedDataTypes);
+                    if (propertyType != null)
+                    {
+                        contentType.AddPropertyType(propertyType);
+                    }
+                }
+                else
+                {
+                    UpdatePropertyTypeFromDTO(existingProp, propDto);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Maps an Umbraco IPropertyType to a PropertyTypeExportDTO.
+        /// </summary>
+        private static PropertyTypeExportDTO MapPropertyTypeToExportDTO(IPropertyType propertyType)
+        {
+            return new PropertyTypeExportDTO
+            {
+                Key = propertyType.Key,
+                Alias = propertyType.Alias,
+                Name = propertyType.Name ?? propertyType.Alias,
+                Description = propertyType.Description,
+                SortOrder = propertyType.SortOrder,
+                DataTypeKey = propertyType.DataTypeKey,
+                Mandatory = propertyType.Mandatory,
+                MandatoryMessage = propertyType.MandatoryMessage,
+                ValidationRegExp = propertyType.ValidationRegExp,
+                ValidationRegExpMessage = propertyType.ValidationRegExpMessage,
+                VariesByCulture = propertyType.VariesByCulture(),
+                VariesBySegment = propertyType.VariesBySegment(),
+                LabelOnTop = propertyType.LabelOnTop ? 1 : 0
+            };
+        }
+
+        /// <summary>
+        /// Updates an existing IPropertyType from a PropertyTypeExportDTO.
+        /// </summary>
+        private static void UpdatePropertyTypeFromDTO(IPropertyType existingProp, PropertyTypeExportDTO propDto)
+        {
+            existingProp.Name = propDto.Name;
+            existingProp.Description = propDto.Description;
+            existingProp.SortOrder = propDto.SortOrder;
+            existingProp.Mandatory = propDto.Mandatory;
+            existingProp.MandatoryMessage = propDto.MandatoryMessage;
+            existingProp.ValidationRegExp = propDto.ValidationRegExp;
+            existingProp.ValidationRegExpMessage = propDto.ValidationRegExpMessage;
+            existingProp.LabelOnTop = propDto.LabelOnTop == 1;
         }
 
         private async Task<PropertyType?> CreatePropertyTypeFromDTO(PropertyTypeExportDTO propDto, Dictionary<Guid, IDataType> importedDataTypes)
@@ -871,10 +1055,6 @@ namespace BlockFarmEditor.Umbraco.Library.Services
                 return null;
             }
 
-            ContentVariation propVariation = ContentVariation.Nothing;
-            if (propDto.VariesByCulture) propVariation |= ContentVariation.Culture;
-            if (propDto.VariesBySegment) propVariation |= ContentVariation.Segment;
-
             var propertyType = new PropertyType(shortStringHelper, dataType, propDto.Alias)
             {
                 Key = propDto.Key,
@@ -885,11 +1065,22 @@ namespace BlockFarmEditor.Umbraco.Library.Services
                 MandatoryMessage = propDto.MandatoryMessage,
                 ValidationRegExp = propDto.ValidationRegExp,
                 ValidationRegExpMessage = propDto.ValidationRegExpMessage,
-                Variations = propVariation,
+                Variations = GetContentVariation(propDto.VariesByCulture, propDto.VariesBySegment),
                 LabelOnTop = propDto.LabelOnTop == 1
             };
 
             return propertyType;
+        }
+
+        /// <summary>
+        /// Calculates ContentVariation flags from boolean properties.
+        /// </summary>
+        private static ContentVariation GetContentVariation(bool variesByCulture, bool variesBySegment)
+        {
+            var variation = ContentVariation.Nothing;
+            if (variesByCulture) variation |= ContentVariation.Culture;
+            if (variesBySegment) variation |= ContentVariation.Segment;
+            return variation;
         }
     }
 }

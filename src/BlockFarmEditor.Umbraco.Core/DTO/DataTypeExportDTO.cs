@@ -20,6 +20,7 @@ namespace BlockFarmEditor.Umbraco.Core.DTO
         public required string EditorAlias { get; set; }
 
         [DataMember]
+        [XmlElement(IsNullable = true)]
         public string? EditorUiAlias { get; set; }
 
         /// <summary>
@@ -27,12 +28,14 @@ namespace BlockFarmEditor.Umbraco.Core.DTO
         /// Used to recreate the folder structure on import.
         /// </summary>
         [DataMember]
+        [XmlElement(IsNullable = true)]
         public string? FolderPath { get; set; }
 
         /// <summary>
         /// Configuration data serialized as XML string to preserve complex nested structures.
         /// </summary>
         [DataMember]
+        [XmlElement(IsNullable = true)]
         public string? ConfigurationDataXml { get; set; }
 
         [DataMember]
@@ -55,6 +58,7 @@ namespace BlockFarmEditor.Umbraco.Core.DTO
         /// Value stored as string. Complex objects should be serialized to XML/JSON string.
         /// </summary>
         [DataMember]
+        [XmlElement(IsNullable = true)]
         public string? Value { get; set; }
     }
 }
