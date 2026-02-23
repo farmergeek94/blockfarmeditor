@@ -7,6 +7,7 @@ public class ImportResultDTO
 {
     public ImportItemCounts DataTypes { get; set; } = new();
     public ImportItemCounts ElementTypes { get; set; } = new();
+    public ImportItemCounts Compositions { get; set; } = new();
     public ImportItemCounts Definitions { get; set; } = new();
     public ImportItemCounts PartialViews { get; set; } = new();
 }

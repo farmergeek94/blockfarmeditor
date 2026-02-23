@@ -185,6 +185,7 @@ export class SettingsDashboard extends UmbLitElement implements UmbPropertyEdito
 
                 const url = new URL(`${UrlHelper.getBaseUrl()}/umbraco/blockfarmeditor/definitions/importpackage`, window.location.origin);
                 url.searchParams.set('overwriteElementTypes', result.overwriteElementTypes.toString());
+                url.searchParams.set('overwriteCompositions', result.overwriteCompositions.toString());
                 url.searchParams.set('overwriteBlockDefinitions', result.overwriteBlockDefinitions.toString());
                 url.searchParams.set('overwritePartialViews', result.overwritePartialViews.toString());
                 url.searchParams.set('overwriteDataTypes', result.overwriteDataTypes.toString());
@@ -202,7 +203,7 @@ export class SettingsDashboard extends UmbLitElement implements UmbPropertyEdito
                     const data = await response.json();
                     this.notificationContext?.peek('positive', {
                         data: {
-                            message: `Package imported successfully: ${data.definitions} definitions, ${data.elementTypes} element types, ${data.dataTypes} data types, ${data.partialViews} partial views`,
+                            message: `Package imported successfully: ${data.definitions} definitions, ${data.elementTypes} element types, ${data.compositions} compositions, ${data.dataTypes} data types, ${data.partialViews} partial views`,
                         }
                     });
                 } else {

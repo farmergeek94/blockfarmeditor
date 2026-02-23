@@ -2,6 +2,9 @@
 
 All notable changes to this project are documented in this file.
 
+## 17.2.8
+- Updated the export and import to include compositions as well as bugfix for no group property types.
+
 ## 17.2.7
 - Comprehensive Import/Export for Block Definitions.
 - Restricted definition updates permissions to require Settings Access.

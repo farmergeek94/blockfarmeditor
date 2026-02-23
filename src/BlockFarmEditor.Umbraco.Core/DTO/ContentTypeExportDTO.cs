@@ -20,9 +20,11 @@ namespace BlockFarmEditor.Umbraco.Core.DTO
         public required string Name { get; set; }
 
         [DataMember]
+        [XmlElement(IsNullable = true)]
         public string? Description { get; set; }
 
         [DataMember]
+        [XmlElement(IsNullable = true)]
         public string? Icon { get; set; }
 
         [DataMember]
@@ -42,12 +44,21 @@ namespace BlockFarmEditor.Umbraco.Core.DTO
         /// Used to recreate the folder structure on import.
         /// </summary>
         [DataMember]
+        [XmlElement(IsNullable = true)]
         public string? FolderPath { get; set; }
 
         [DataMember]
         [XmlArray("PropertyGroups")]
         [XmlArrayItem("PropertyGroup")]
         public List<PropertyGroupExportDTO> PropertyGroups { get; set; } = [];
+
+        /// <summary>
+        /// Property types that are not assigned to any group (shown in "Generic properties" tab).
+        /// </summary>
+        [DataMember]
+        [XmlArray("NoGroupPropertyTypes")]
+        [XmlArrayItem("PropertyType")]
+        public List<PropertyTypeExportDTO> NoGroupPropertyTypes { get; set; } = [];
 
         [DataMember]
         [XmlArray("CompositionAliases")]
@@ -103,6 +114,7 @@ namespace BlockFarmEditor.Umbraco.Core.DTO
         public required string Name { get; set; }
 
         [DataMember]
+        [XmlElement(IsNullable = true)]
         public string? Description { get; set; }
 
         [DataMember]
@@ -115,12 +127,15 @@ namespace BlockFarmEditor.Umbraco.Core.DTO
         public bool Mandatory { get; set; }
 
         [DataMember]
+        [XmlElement(IsNullable = true)]
         public string? MandatoryMessage { get; set; }
 
         [DataMember]
+        [XmlElement(IsNullable = true)]
         public string? ValidationRegExp { get; set; }
 
         [DataMember]
+        [XmlElement(IsNullable = true)]
         public string? ValidationRegExpMessage { get; set; }
 
         [DataMember]

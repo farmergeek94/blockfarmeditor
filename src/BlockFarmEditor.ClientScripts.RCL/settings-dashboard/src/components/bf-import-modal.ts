@@ -12,6 +12,9 @@ export class ImportModalElement extends UmbModalBaseElement<ImportModalData, Imp
     private _overwriteElementTypes: boolean = false;
 
     @state()
+    private _overwriteCompositions: boolean = false;
+
+    @state()
     private _overwriteBlockDefinitions: boolean = false;
 
     @state()
@@ -36,6 +39,10 @@ export class ImportModalElement extends UmbModalBaseElement<ImportModalData, Imp
 
     #handleElementTypesToggle = (e: Event) => {
         this._overwriteElementTypes = (e.target as HTMLInputElement).checked;
+    }
+
+    #handleCompositionsToggle = (e: Event) => {
+        this._overwriteCompositions = (e.target as HTMLInputElement).checked;
     }
 
     #handleBlockDefinitionsToggle = (e: Event) => {
@@ -64,6 +71,7 @@ export class ImportModalElement extends UmbModalBaseElement<ImportModalData, Imp
         const result: ImportModalResult = {
             file: this._file,
             overwriteElementTypes: this._overwriteElementTypes,
+            overwriteCompositions: this._overwriteCompositions,
             overwriteBlockDefinitions: this._overwriteBlockDefinitions,
             overwritePartialViews: this._overwritePartialViews,
             overwriteDataTypes: this._overwriteDataTypes
@@ -130,6 +138,14 @@ export class ImportModalElement extends UmbModalBaseElement<ImportModalData, Imp
                                 .checked="${this._overwriteElementTypes}"
                                 @change="${this.#handleElementTypesToggle}"
                                 label="Overwrite existing element types"
+                            ></uui-toggle>
+                        </div>
+                        
+                        <div class="option-row">
+                            <uui-toggle 
+                                .checked="${this._overwriteCompositions}"
+                                @change="${this.#handleCompositionsToggle}"
+                                label="Overwrite existing compositions"
                             ></uui-toggle>
                         </div>
                         
