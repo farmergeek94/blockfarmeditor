@@ -9,13 +9,13 @@ export class ImportModalElement extends UmbModalBaseElement<ImportModalData, Imp
     private _file?: File;
 
     @state()
-    private _overwriteElementTypes: boolean = true;
+    private _overwriteElementTypes: boolean = false;
 
     @state()
-    private _overwriteBlockDefinitions: boolean = true;
+    private _overwriteBlockDefinitions: boolean = false;
 
     @state()
-    private _overwritePartialViews: boolean = true;
+    private _overwritePartialViews: boolean = false;
 
     @state()
     private _overwriteDataTypes: boolean = false;
@@ -122,7 +122,7 @@ export class ImportModalElement extends UmbModalBaseElement<ImportModalData, Imp
                     </div>
 
                     <div class="section">
-                        <h3>Overwrite Options</h3>
+                        <h3 style="margin-bottom: 0">Overwrite Options</h3>
                         <p class="hint">New items are always imported. These options control whether to update existing items.</p>
                         
                         <div class="option-row">
@@ -270,6 +270,7 @@ export class ImportModalElement extends UmbModalBaseElement<ImportModalData, Imp
             display: flex;
             align-items: center;
             gap: var(--uui-size-space-3);
+            margin-bottom: var(--uui-size-space-2);
         }
 
         .info-box {

@@ -52,7 +52,8 @@ namespace BlockFarmEditor.Umbraco.Core.Interfaces
         /// <param name="overwriteBlockDefinitions">If true, overwrites existing block definitions. Default true.</param>
         /// <param name="overwritePartialViews">If true, overwrites existing partial views. Default true.</param>
         /// <param name="overwriteDataTypes">If true, overwrites existing data types. Default false.</param>
-        Task ImportPackageAsync(
+        /// <returns>Import result with counts of created, updated, skipped, and failed items.</returns>
+        Task<ImportResultDTO> ImportPackageAsync(
             BlockFarmEditorExportPackageDTO package, 
             bool overwriteElementTypes = true, 
             bool overwriteBlockDefinitions = true, 

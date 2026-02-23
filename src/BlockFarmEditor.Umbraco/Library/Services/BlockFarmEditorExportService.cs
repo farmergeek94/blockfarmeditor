@@ -408,13 +408,14 @@ namespace BlockFarmEditor.Umbraco.Library.Services
             return result;
         }
 
-        public async Task ImportPackageAsync(
+        public async Task<ImportResultDTO> ImportPackageAsync(
             BlockFarmEditorExportPackageDTO package, 
             bool overwriteElementTypes = true, 
             bool overwriteBlockDefinitions = true, 
             bool overwritePartialViews = true, 
             bool overwriteDataTypes = false)
         {
+            var result = new ImportResultDTO();
             var currentUser = await GetCurrentUserIdAsync();
 
             // 1. Import data types first (they're dependencies for element types)
@@ -439,10 +440,12 @@ namespace BlockFarmEditor.Umbraco.Library.Services
                             existingDataType.ConfigurationData = configDict;
 
                             await dataTypeService.UpdateAsync(existingDataType, currentUser);
+                            result.DataTypes.Updated++;
                             logger.LogInformation("Updated data type: {Name}", dataTypeDto.Name);
                         }
                         else
                         {
+                            result.DataTypes.Skipped++;
                             logger.LogInformation("Skipped existing data type (overwrite disabled): {Name}", dataTypeDto.Name);
                         }
                         importedDataTypes[dataTypeDto.Key] = existingDataType;
@@ -453,6 +456,7 @@ namespace BlockFarmEditor.Umbraco.Library.Services
                         var editor = propertyEditors[dataTypeDto.EditorAlias];
                         if (editor == null)
                         {
+                            result.DataTypes.Failed++;
                             logger.LogWarning("Property editor not found: {EditorAlias}. Skipping data type: {Name}", dataTypeDto.EditorAlias, dataTypeDto.Name);
                             continue;
                         }
@@ -468,20 +472,23 @@ namespace BlockFarmEditor.Umbraco.Library.Services
                             ConfigurationData = DeserializeConfigurationData(dataTypeDto.ConfigurationItems)
                         };
 
-                        var result = await dataTypeService.CreateAsync(newDataType, currentUser);
-                        if (result.Success)
+                        var createResult = await dataTypeService.CreateAsync(newDataType, currentUser);
+                        if (createResult.Success)
                         {
-                            importedDataTypes[dataTypeDto.Key] = result.Result;
+                            importedDataTypes[dataTypeDto.Key] = createResult.Result;
+                            result.DataTypes.Created++;
                             logger.LogInformation("Created data type: {Name}", dataTypeDto.Name);
                         }
                         else
                         {
-                            logger.LogError("Failed to create data type: {Name}. Status: {Status}", dataTypeDto.Name, result.Status);
+                            result.DataTypes.Failed++;
+                            logger.LogError("Failed to create data type: {Name}. Status: {Status}", dataTypeDto.Name, createResult.Status);
                         }
                     }
                 }
                 catch (Exception ex)
                 {
+                    result.DataTypes.Failed++;
                     logger.LogError(ex, "Failed to import data type: {Name}", dataTypeDto.Name);
                 }
             }
@@ -499,10 +506,12 @@ namespace BlockFarmEditor.Umbraco.Library.Services
                             // Update existing element type
                             await UpdateContentTypeFromDTO(existingContentType, elementTypeDto, importedDataTypes);
                             await contentTypeService.UpdateAsync(existingContentType, currentUser);
+                            result.ElementTypes.Updated++;
                             logger.LogInformation("Updated element type: {Alias}", elementTypeDto.Alias);
                         }
                         else
                         {
+                            result.ElementTypes.Skipped++;
                             logger.LogInformation("Skipped existing element type (overwrite disabled): {Alias}", elementTypeDto.Alias);
                         }
                     }
@@ -511,11 +520,13 @@ namespace BlockFarmEditor.Umbraco.Library.Services
                         // Create new element type
                         var newContentType = await CreateContentTypeFromDTO(elementTypeDto, importedDataTypes);
                         await contentTypeService.CreateAsync(newContentType, currentUser);
+                        result.ElementTypes.Created++;
                         logger.LogInformation("Created element type: {Alias}", elementTypeDto.Alias);
                     }
                 }
                 catch (Exception ex)
                 {
+                    result.ElementTypes.Failed++;
                     logger.LogError(ex, "Failed to import element type: {Alias}", elementTypeDto.Alias);
                 }
             }
@@ -532,21 +543,25 @@ namespace BlockFarmEditor.Umbraco.Library.Services
                         if (overwriteBlockDefinitions)
                         {
                             await definitionService.UpdateAsync(db, existingDefinition.Id, definitionDto.Type, definitionDto.ViewPath, definitionDto.Category, definitionDto.Enabled, currentUser);
+                            result.Definitions.Updated++;
                             logger.LogInformation("Updated definition: {Alias}", definitionDto.ContentTypeAlias);
                         }
                         else
                         {
+                            result.Definitions.Skipped++;
                             logger.LogInformation("Skipped existing definition (overwrite disabled): {Alias}", definitionDto.ContentTypeAlias);
                         }
                     }
                     else
                     {
                         await definitionService.CreateAsync(db, definitionDto, currentUser);
+                        result.Definitions.Created++;
                         logger.LogInformation("Created definition: {Alias}", definitionDto.ContentTypeAlias);
                     }
                 }
                 catch (Exception ex)
                 {
+                    result.Definitions.Failed++;
                     logger.LogError(ex, "Failed to import definition: {Alias}", definitionDto.ContentTypeAlias);
                 }
             }
@@ -570,10 +585,12 @@ namespace BlockFarmEditor.Umbraco.Library.Services
                                 Directory.CreateDirectory(targetDir);
                             }
                             await IOFile.WriteAllTextAsync(targetPath, partialViewDto.Content);
+                            result.PartialViews.Updated++;
                             logger.LogInformation("Updated partial view: {Path}", partialViewDto.Path);
                         }
                         else
                         {
+                            result.PartialViews.Skipped++;
                             logger.LogInformation("Skipped existing partial view (overwrite disabled): {Path}", partialViewDto.Path);
                         }
                     }
@@ -585,14 +602,18 @@ namespace BlockFarmEditor.Umbraco.Library.Services
                             Directory.CreateDirectory(targetDir);
                         }
                         await IOFile.WriteAllTextAsync(targetPath, partialViewDto.Content);
+                        result.PartialViews.Created++;
                         logger.LogInformation("Created partial view: {Path}", partialViewDto.Path);
                     }
                 }
                 catch (Exception ex)
                 {
+                    result.PartialViews.Failed++;
                     logger.LogError(ex, "Failed to import partial view: {Path}", partialViewDto.Path);
                 }
             }
+
+            return result;
         }
 
         #region Helper Methods

@@ -23,7 +23,7 @@ export const BLOCKFARMEDITOR_EXPORT_MODAL = new UmbModalToken<ExportModalData, E
     {
         modal: {
             type: 'sidebar',
-            size: 'small'
+            size: 'medium'
         }
     }
 );

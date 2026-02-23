@@ -91,16 +91,19 @@ export class ExportModalElement extends UmbModalBaseElement<ExportModalData, Exp
         this._applyFilter();
     }
 
-    #selectAll = () => {
-        this._definitions.forEach(d => d.selected = true);
+    #handleSelectAllToggle = (e: Event) => {
+        const checked = (e.target as HTMLInputElement).checked;
+        this._definitions.forEach(d => d.selected = checked);
         this._definitions = [...this._definitions];
         this._applyFilter();
     }
 
-    #deselectAll = () => {
-        this._definitions.forEach(d => d.selected = false);
-        this._definitions = [...this._definitions];
-        this._applyFilter();
+    get _allSelected(): boolean {
+        return this._definitions.length > 0 && this._definitions.every(d => d.selected);
+    }
+
+    get _someSelected(): boolean {
+        return this._definitions.some(d => d.selected) && !this._allSelected;
     }
 
     #handleDownloadToggle = (e: Event) => {
@@ -145,7 +148,7 @@ export class ExportModalElement extends UmbModalBaseElement<ExportModalData, Exp
         }
 
         return html`
-            <umb-body-layout headline="Export Definitions">
+            <umb-body-layout headline="Export Definitions" scrollable>
                 <div class="modal-content">
                     <p class="description">
                         Select the definitions to export. The export will include linked element types, 
@@ -162,9 +165,13 @@ export class ExportModalElement extends UmbModalBaseElement<ExportModalData, Exp
                     </div>
 
                     <div class="selection-actions">
-                        <uui-button look="secondary" @click="${this.#selectAll}">Select All</uui-button>
-                        <uui-button look="secondary" @click="${this.#deselectAll}">Deselect All</uui-button>
-                        <span class="selection-count">${this._selectedCount} selected</span>
+                        <uui-checkbox
+                            .checked="${this._allSelected}"
+                            ?indeterminate="${this._someSelected}"
+                            @change="${this.#handleSelectAllToggle}"
+                            label="Select all"
+                        ></uui-checkbox>
+                        <span class="selection-count">${this._selectedCount} of ${this._definitions.length} selected</span>
                     </div>
 
                     <div class="definitions-list">
@@ -231,11 +238,16 @@ export class ExportModalElement extends UmbModalBaseElement<ExportModalData, Exp
         .modal-content {
             padding: var(--uui-size-space-4);
             overflow-y: auto;
+            display: flex;
+            flex-direction: column;         
+            max-height: 100%;
+            box-sizing: border-box;
         }
 
         .description {
             margin: 0 0 var(--uui-size-space-4) 0;
             color: var(--uui-color-text-alt);
+            flex: 0;
         }
 
         .loading {
@@ -248,6 +260,7 @@ export class ExportModalElement extends UmbModalBaseElement<ExportModalData, Exp
 
         .search-container {
             margin-bottom: var(--uui-size-space-4);
+            flex: 0;
         }
 
         .search-container uui-input {
@@ -261,6 +274,7 @@ export class ExportModalElement extends UmbModalBaseElement<ExportModalData, Exp
             margin-bottom: var(--uui-size-space-4);
             padding-bottom: var(--uui-size-space-3);
             border-bottom: 1px solid var(--uui-color-border);
+            flex: 0;
         }
 
         .selection-count {
@@ -270,9 +284,9 @@ export class ExportModalElement extends UmbModalBaseElement<ExportModalData, Exp
         }
 
         .definitions-list {
-            max-height: 400px;
             overflow-y: auto;
             margin-bottom: var(--uui-size-space-4);
+            flex: 1;
         }
 
         .section-container {
@@ -312,6 +326,12 @@ export class ExportModalElement extends UmbModalBaseElement<ExportModalData, Exp
             border-color: var(--uui-color-border-emphasis);
         }
 
+        .item-card umb-icon {
+            margin-right: var(--uui-size-space-4);
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
         .item-details {
             flex: 1;
             min-width: 0;
@@ -336,6 +356,7 @@ export class ExportModalElement extends UmbModalBaseElement<ExportModalData, Exp
         .options-section {
             padding-top: var(--uui-size-space-4);
             border-top: 1px solid var(--uui-color-border);
+            flex: 0;
         }
 
         .option-row {

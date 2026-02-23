@@ -112,16 +112,16 @@ namespace BlockFarmEditor.Umbraco.Controllers
                     package = await exportService.ReadFromFolderAsync();
                 }
 
-                await exportService.ImportPackageAsync(package, overwriteElementTypes, overwriteBlockDefinitions, overwritePartialViews, overwriteDataTypes);
+                var importResult = await exportService.ImportPackageAsync(package, overwriteElementTypes, overwriteBlockDefinitions, overwritePartialViews, overwriteDataTypes);
                 blockDefinitionService.ClearCache();
 
                 return Ok(new
                 {
                     message = "Package imported successfully",
-                    definitions = package.Definitions.Count,
-                    elementTypes = package.ElementTypes.Count,
-                    dataTypes = package.DataTypes.Count,
-                    partialViews = package.PartialViews.Count
+                    definitions = importResult.Definitions.Imported,
+                    elementTypes = importResult.ElementTypes.Imported,
+                    dataTypes = importResult.DataTypes.Imported,
+                    partialViews = importResult.PartialViews.Imported
                 });
             }
             catch (Exception ex)
