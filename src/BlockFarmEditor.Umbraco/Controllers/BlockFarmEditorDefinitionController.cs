@@ -1,9 +1,9 @@
 using BlockFarmEditor.Umbraco.Core.DTO;
 using BlockFarmEditor.Umbraco.Core.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System.Xml.Serialization;
 using Umbraco.Cms.Core.Services;
 using Umbraco.Cms.Infrastructure.Persistence;
 using Umbraco.Cms.Web.Common.Authorization;
@@ -16,7 +16,8 @@ namespace BlockFarmEditor.Umbraco.Controllers
         ILogger<BlockFarmEditorDefinitionController> logger,
         IUserService userService,
         IUmbracoDatabaseFactory umbracoDatabaseFactory,
-        IBlockDefinitionService blockDefinitionService) : Controller
+        IBlockDefinitionService blockDefinitionService,
+        IBlockFarmEditorExportService exportService) : Controller
     {
 
         /// <summary>
@@ -45,90 +46,127 @@ namespace BlockFarmEditor.Umbraco.Controllers
             }
         }
 
-
+        /// <summary>
+        /// Export comprehensive package with definitions, element types, data types, and partial views.
+        /// </summary>
+        /// <param name="request">Export options including definition keys and download flag</param>
+        /// <returns>OK or ZIP file depending on download flag</returns>
         [HttpPost]
-        public async Task<IActionResult> Export()
+        public async Task<IActionResult> ExportPackage([FromBody] ExportPackageRequest request)
         {
-            var path = Path.Combine("BlockFarmEditor", "Definitions");
-            Directory.CreateDirectory(path);
-
-            using var umbracoDatabase = umbracoDatabaseFactory.CreateDatabase();
-
-            var result = await definitionService.GetAllAsync(umbracoDatabase);
-            if (result != null)
+            try
             {
-                await foreach (var item in result)
+                var definitionKeys = request.DefinitionKeys?.Select(Guid.Parse).ToList() ?? [];
+                var package = await exportService.BuildExportPackageAsync(definitionKeys);
+
+                // Always write to folder
+                await exportService.ExportToFolderAsync(package);
+
+                if (request.Download)
                 {
-                    if (item != null)
-                    {
-                        // Export as XML to allow embedding JSON in string fields without conflicts
-                        var filePath = Path.Combine(path, $"{item.ContentTypeAlias}.xml");
-                        try
-                        {
-                            var serializer = new XmlSerializer(typeof(BlockFarmEditorDefinitionDTO));
-                            using var fs = System.IO.File.Create(filePath);
-                            serializer.Serialize(fs, item);
-                        }
-                        catch (Exception ex)
-                        {
-                            logger.LogError(ex, "Failed to export definition {Alias} to XML", item.ContentTypeAlias);
-                        }
-                    }
+                    var zipBytes = await exportService.ExportToZipAsync(package);
+                    return File(zipBytes, "application/zip", $"blockfarmeditor-export-{DateTime.UtcNow:yyyyMMddHHmmss}.zip");
                 }
+
+                return Ok(new { message = "Package exported to folder successfully", definitionCount = package.Definitions.Count });
             }
-            return Ok();
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error exporting package");
+                return StatusCode(500, "Failed to export package");
+            }
         }
 
-
+        /// <summary>
+        /// Import comprehensive package from ZIP file or server folder.
+        /// </summary>
+        /// <param name="file">Optional ZIP file to import</param>
+        /// <param name="overwriteElementTypes">Whether to overwrite existing element types</param>
+        /// <param name="overwriteBlockDefinitions">Whether to overwrite existing block definitions</param>
+        /// <param name="overwritePartialViews">Whether to overwrite existing partial views</param>
+        /// <param name="overwriteDataTypes">Whether to overwrite existing data types</param>
+        /// <returns>Import result</returns>
         [HttpPost]
-        public async Task<IActionResult> Import()
+        public async Task<IActionResult> ImportPackage(
+            IFormFile? file, 
+            [FromQuery] bool overwriteElementTypes = true,
+            [FromQuery] bool overwriteBlockDefinitions = true,
+            [FromQuery] bool overwritePartialViews = true,
+            [FromQuery] bool overwriteDataTypes = false)
         {
-            var path = Path.Combine("BlockFarmEditor", "Definitions");
-            if (Path.Exists(path))
+            try
             {
-                using var umbracoDatabase = umbracoDatabaseFactory.CreateDatabase();
+                BlockFarmEditorExportPackageDTO package;
 
-                var files = Directory.EnumerateFiles(path);
-                foreach(var file in files)
+                if (file != null && file.Length > 0)
                 {
-                    try
+                    // Import from uploaded ZIP
+                    using var stream = file.OpenReadStream();
+                    package = await exportService.ReadFromZipAsync(stream);
+                }
+                else
+                {
+                    // Import from server folder
+                    package = await exportService.ReadFromFolderAsync();
+                }
+
+                await exportService.ImportPackageAsync(package, overwriteElementTypes, overwriteBlockDefinitions, overwritePartialViews, overwriteDataTypes);
+                blockDefinitionService.ClearCache();
+
+                return Ok(new
+                {
+                    message = "Package imported successfully",
+                    definitions = package.Definitions.Count,
+                    elementTypes = package.ElementTypes.Count,
+                    dataTypes = package.DataTypes.Count,
+                    partialViews = package.PartialViews.Count
+                });
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error importing package");
+                return StatusCode(500, "Failed to import package");
+            }
+        }
+
+        /// <summary>
+        /// Get all definitions available for export selection.
+        /// </summary>
+        /// <returns>List of definitions with key, alias, category</returns>
+        [HttpGet]
+        public async Task<IActionResult> Exportable()
+        {
+            try
+            {
+                using var db = umbracoDatabaseFactory.CreateDatabase();
+                var definitions = blockDefinitionService.RetrieveBlockFarmEditorDefinitions().Values.AsEnumerable();
+
+                var result = new List<object>();
+
+                foreach (var def in definitions)
+                {
+                    if (def != null)
                     {
-                        // Read XML file; keep any JSON strings in fields like ViewPath untouched
-                        BlockFarmEditorDefinitionDTO? dto = null;
-                        var serializer = new XmlSerializer(typeof(BlockFarmEditorDefinitionDTO));
-                        using (var fs = System.IO.File.OpenRead(file))
+                        result.Add(new
                         {
-                            dto = serializer.Deserialize(fs) as BlockFarmEditorDefinitionDTO;
-                        }
-
-                        if(dto == null)
-                        {
-                            logger.LogWarning("Skipping import. Could not deserialize XML definition file: {File}", file);
-                            continue;
-                        }
-
-                        var alias = Path.GetFileNameWithoutExtension(file);
-
-                        var definition = await definitionService.GetByAliasAsync(umbracoDatabase, alias);
-
-                        var currentUser = await GetCurrentUserIdAsync();
-
-                        if (definition != null)
-                        {
-                            await definitionService.UpdateAsync(umbracoDatabase, definition.Id, dto.Type, dto.ViewPath, dto.Category, dto.Enabled, currentUser);
-
-                        } else
-                        {
-                            await definitionService.CreateAsync(umbracoDatabase, dto, currentUser);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        logger.LogError(ex, "Failed to import definition from XML file {File}", file);
+                            key = def.Key.ToString(),
+                            name = def.ContentType?.Name,
+                            alias = def.ContentTypeAlias,
+                            category = def.Category,
+                            enabled = def.Enabled,
+                            icon = def.ContentType?.Icon,
+                            description = def.ContentType?.Description
+                        });
                     }
                 }
+
+                return Ok(result);
             }
-            return Ok();
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error retrieving exportable definitions");
+                return StatusCode(500, "Internal server error");
+            }
         }
 
         [HttpGet]
@@ -291,5 +329,21 @@ namespace BlockFarmEditor.Umbraco.Controllers
         public required string ViewPath { get; set; }
         public required string Category { get; set; }
         public bool Enabled { get; set; }
+    }
+
+    /// <summary>
+    /// Request model for exporting a package
+    /// </summary>
+    public class ExportPackageRequest
+    {
+        /// <summary>
+        /// Definition keys to export. If empty or null, exports all definitions.
+        /// </summary>
+        public List<string>? DefinitionKeys { get; set; }
+
+        /// <summary>
+        /// Whether to return a ZIP file download.
+        /// </summary>
+        public bool Download { get; set; }
     }
 }

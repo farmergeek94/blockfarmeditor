@@ -18,11 +18,11 @@ namespace BlockFarmEditor.Umbraco.TagHelpers
     [HtmlTargetElement("block-area")]
     public class BlockAreaTagHelper(IBlockFarmEditorContext blockFarmEditorContext, IBlockFarmEditorRenderService blockFarmEditorRenderService, IHtmlHelper htmlHelper) : TagHelper
     {
-        public string Identifier { get; set; }
+        public required string Identifier { get; set; }
 
         [ViewContext]
         [HtmlAttributeNotBound]
-        public ViewContext ViewContext { get; set; }
+        public required ViewContext ViewContext { get; set; }
 
         public IEnumerable<string> AllowedBlocks { get; set; } = [];
 

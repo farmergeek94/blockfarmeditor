@@ -104,6 +104,20 @@
       "name": "Use Layout Modal",
       "element": "/App_Plugins/BlockFarmEditor.ClientScripts.RCL/property-editor/dist/blockfarmeditor-use-layout.js",
       "elementName": "bf-use-layout-modal"
+    },
+    {
+      "type": "modal",
+      "alias": "BlockFarmEditor.Export.Modal",
+      "name": "Export Definitions Modal",
+      "element": "/App_Plugins/BlockFarmEditor.ClientScripts.RCL/settings-dashboard/dist/bf-export-modal.js",
+      "elementName": "bf-export-modal"
+    },
+    {
+      "type": "modal",
+      "alias": "BlockFarmEditor.Import.Modal",
+      "name": "Import Definitions Modal",
+      "element": "/App_Plugins/BlockFarmEditor.ClientScripts.RCL/settings-dashboard/dist/bf-import-modal.js",
+      "elementName": "bf-import-modal"
     }
   ]
 }
