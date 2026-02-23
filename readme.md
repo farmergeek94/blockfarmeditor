@@ -91,10 +91,10 @@ Docs: https://blockfarmeditor.com/readme/layouts/
 
 ## History
 ### Recent releases
+- **17.2.8**: Updated the export and import to include compositions as well as bugfix for no group property types.
 - **17.2.7**: Comprehensive Import/Export for Block Definitions.
 - **17.2.6**: Removed stream reset.
 - **17.2.5**: Added support for published content and culture in block viewcomponents.
 - **17.2.4**: Assembly loading improvements and ViewComponent bugfix.
-- **17.2.3**: Resolved an issue when there are no property groups.
 
 Full changelog: https://github.com/farmergeek94/blockfarmeditor/blob/main/CHANGELOG.md

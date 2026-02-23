@@ -12,12 +12,12 @@
     <PackageIcon>BlockFarmEditorIcon.png</PackageIcon>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-    <VersionPrefix>17.2.7</VersionPrefix>
+    <VersionPrefix>17.2.8</VersionPrefix>
     <PackageOutputPath>../</PackageOutputPath>
     <PackageReadmeFile>readme.md</PackageReadmeFile>
     <Title>Client Package for Block Farm Editor</Title>
     <Copyright>© 2026 Joshua Hess. All rights reserved.</Copyright>
-    <PackageReleaseNotes>Comprehensive Import/Export for Block Definitions.</PackageReleaseNotes>
+    <PackageReleaseNotes>Updated the export and import to include compositions as well as bugfix for no group property types.</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
