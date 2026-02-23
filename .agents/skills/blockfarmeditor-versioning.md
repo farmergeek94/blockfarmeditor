@@ -25,8 +25,12 @@ Automates version bumping and release note updates for BlockFarmEditor projects.
      - Update `<VersionPrefix>` to the new version.  
      - Update `<PackageReleaseNotes>` with the new comment.
 
-5. **Update readme.md:**  
+5. **Update CHANGELOG.md:**
+   - Add the new version history along with the new comment.
+
+6. **Update readme.md:**  
    - Add the new version history entry at the top of the version history section along with the new comment.
+   - Only keep last 5 version changes.
 
 ## Usage
 

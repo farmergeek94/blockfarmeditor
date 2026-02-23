@@ -2,8 +2,24 @@
 
 All notable changes to this project are documented in this file.
 
-<details>
-<summary><strong>17.x</strong></summary>
+## 17.2.7
+- Comprehensive Import/Export for Block Definitions.
+- Restricted definition updates permissions to require Settings Access.
+
+## 17.2.6
+- Removed stream reset.
+
+## 17.2.5
+- Added support for published content and culture in block viewcomponents.
+
+## 17.2.4
+- Assembly loading improvements and ViewComponent bugfix.
+
+## 17.2.3
+- Resolved an issue when there are no property groups.
+
+## 17.2.2
+- Added the Definition Actions back in.
 
 ## 17.2.1
 - Resolve client library static assets.
@@ -63,18 +79,8 @@ All notable changes to this project are documented in this file.
 ## 17.0.0
 - Updated for compatibility with Umbraco 17.
 
-</details>
-
-<details>
-<summary><strong>2.x</strong></summary>
-
 ## 2.0.0
 - Switched to using Element Document Types for blocks.
-
-</details>
-
-<details>
-<summary><strong>1.x</strong></summary>
 
 ## 1.2.0
 - Switched to using data types instead of property editors directly.
@@ -87,7 +93,7 @@ All notable changes to this project are documented in this file.
 - Fixed a movement issue with sibling areas.
 
 ## 1.1.0
-- Added the “show layers” feature.
+- Added the "show layers" feature.
 - Stabilized block movement behavior.
 
 ## 1.0.4
@@ -102,5 +108,3 @@ All notable changes to this project are documented in this file.
 
 ## 1.0.0
 - Initial release for testing.
-
-</details>

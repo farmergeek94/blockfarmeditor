@@ -92,21 +92,9 @@ Docs: https://blockfarmeditor.com/readme/layouts/
 ## History
 ### Recent releases
 - **17.2.7**: Comprehensive Import/Export for Block Definitions.
-  - Restricted definition updates permissions to require Settings Access.
 - **17.2.6**: Removed stream reset.
 - **17.2.5**: Added support for published content and culture in block viewcomponents.
 - **17.2.4**: Assembly loading improvements and ViewComponent bugfix.
 - **17.2.3**: Resolved an issue when there are no property groups.
-- **17.2.2**: Added the Definition Actions back in.
-- **17.2.1**: Resolve client library static assets.
-- **17.2.0**: Updated Umbraco to 17.2.0.
-- **17.1.15**: Licensed under MIT.
-- **17.1.14**: Styling updates and improvements.
-- **17.1.13**: Resolved a boolean parse issue.
-- **17.1.12**: Resolved Composition PropertyTypes not being resolved.
-- **17.1.11**: Added in orphaned PropertyGroups.
-- **17.1.10**: Resolved composition propertygroups.
-- **17.1.9**: Resolved core nuget upgrade.
-- **17.1.8**: Additional membership changes.
 
 Full changelog: https://github.com/farmergeek94/blockfarmeditor/blob/main/CHANGELOG.md
