@@ -15,7 +15,7 @@
     <PackageProjectUrl>https://blockfarmeditor.com/readme/</PackageProjectUrl>
     <PackageIcon>BlockFarmEditorIcon.png</PackageIcon>
     <PackageTags>umbraco;visual;editor;block;blocks;builder;umbraco-marketplace;</PackageTags>
-    <PackageReleaseNotes>Added the import and export capabilities of zip files.</PackageReleaseNotes>
+    <PackageReleaseNotes>Comprehensive Import/Export for Block Definitions.</PackageReleaseNotes>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <VersionPrefix>17.2.7</VersionPrefix>

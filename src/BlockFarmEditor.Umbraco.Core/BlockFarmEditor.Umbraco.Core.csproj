@@ -8,7 +8,7 @@
       <VersionPrefix>17.2.7</VersionPrefix>
       <PackageIcon>BlockFarmEditorIcon.png</PackageIcon>
       <PackageReadmeFile>readme.md</PackageReadmeFile>
-    <PackageReleaseNotes>Added the import and export capabilities of zip files.</PackageReleaseNotes>
+    <PackageReleaseNotes>Comprehensive Import/Export for Block Definitions.</PackageReleaseNotes>
       <PackageOutputPath>../</PackageOutputPath>
       <Title>Block Farm Editor Core</Title>
       <Description>Block Farm Editor Core Files</Description>

@@ -17,7 +17,7 @@
     <PackageReadmeFile>readme.md</PackageReadmeFile>
     <Title>Client Package for Block Farm Editor</Title>
     <Copyright>© 2026 Joshua Hess. All rights reserved.</Copyright>
-    <PackageReleaseNotes>Added the import and export capabilities of zip files.</PackageReleaseNotes>
+    <PackageReleaseNotes>Comprehensive Import/Export for Block Definitions.</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
