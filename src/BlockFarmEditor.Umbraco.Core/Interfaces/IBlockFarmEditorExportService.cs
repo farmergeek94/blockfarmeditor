@@ -48,14 +48,16 @@ namespace BlockFarmEditor.Umbraco.Core.Interfaces
         /// data types, and partial views.
         /// </summary>
         /// <param name="package">The package to import.</param>
-        /// <param name="overwriteElementTypes">If true, overwrites existing element types (including compositions). Default true.</param>
+        /// <param name="overwriteElementTypes">If true, overwrites existing element types. Default true.</param>
+        /// <param name="overwriteCompositions">If true, overwrites existing compositions. Default true.</param>
         /// <param name="overwriteBlockDefinitions">If true, overwrites existing block definitions. Default true.</param>
         /// <param name="overwritePartialViews">If true, overwrites existing partial views. Default true.</param>
         /// <param name="overwriteDataTypes">If true, overwrites existing data types. Default false.</param>
         /// <returns>Import result with counts of created, updated, skipped, and failed items.</returns>
         Task<ImportResultDTO> ImportPackageAsync(
             BlockFarmEditorExportPackageDTO package, 
-            bool overwriteElementTypes = true, 
+            bool overwriteElementTypes = true,
+            bool overwriteCompositions = true,
             bool overwriteBlockDefinitions = true, 
             bool overwritePartialViews = true, 
             bool overwriteDataTypes = false);

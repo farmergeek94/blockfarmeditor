@@ -413,13 +413,19 @@ namespace BlockFarmEditor.Umbraco.Library.Services
 
         public async Task<ImportResultDTO> ImportPackageAsync(
             BlockFarmEditorExportPackageDTO package, 
-            bool overwriteElementTypes = true, 
+            bool overwriteElementTypes = true,
+            bool overwriteCompositions = true,
             bool overwriteBlockDefinitions = true, 
             bool overwritePartialViews = true, 
             bool overwriteDataTypes = false)
         {
             var result = new ImportResultDTO();
             var currentUser = await GetCurrentUserIdAsync();
+
+            // Identify which aliases are used as compositions by other element types
+            var compositionAliases = package.ElementTypes
+                .SelectMany(et => et.CompositionAliases)
+                .ToHashSet();
 
             // 1. Import data types first (they're dependencies for element types)
             // Cache imported data types for property type creation
@@ -496,43 +502,49 @@ namespace BlockFarmEditor.Umbraco.Library.Services
                 }
             }
 
-            // 2. Import element types (sorted by dependency - those with no compositions first)
+            // 2. Import element types (sorted by dependency - compositions first)
             var sortedElementTypes = SortContentTypesByDependency(package.ElementTypes);
             
             foreach (var elementTypeDto in sortedElementTypes)
             {
+                // Determine if this element type is used as a composition
+                var isComposition = compositionAliases.Contains(elementTypeDto.Alias);
+                var shouldOverwrite = isComposition ? overwriteCompositions : overwriteElementTypes;
+                var counts = isComposition ? result.Compositions : result.ElementTypes;
+                var typeLabel = isComposition ? "composition" : "element type";
+
                 try
                 {
                     var existingContentType = contentTypeService.Get(elementTypeDto.Alias);
                     if (existingContentType != null)
                     {
-                        if (overwriteElementTypes)
+                        if (shouldOverwrite)
                         {
-                            // Update existing element type
+                            // Update existing
                             await UpdateContentTypeFromDTO(existingContentType, elementTypeDto, importedDataTypes);
                             await contentTypeService.UpdateAsync(existingContentType, currentUser);
-                            result.ElementTypes.Updated++;
-                            logger.LogInformation("Updated element type: {Alias}", elementTypeDto.Alias);
+                            counts.Updated++;
+                            logger.LogInformation("Updated {TypeLabel}: {Alias}", typeLabel, elementTypeDto.Alias);
                         }
                         else
                         {
-                            result.ElementTypes.Skipped++;
-                            logger.LogInformation("Skipped existing element type (overwrite disabled): {Alias}", elementTypeDto.Alias);
+                            counts.Skipped++;
+                            logger.LogInformation("Skipped existing {TypeLabel} (overwrite disabled): {Alias}", typeLabel, elementTypeDto.Alias);
                         }
                     }
                     else
                     {
-                        // Create new element type
+                        // Create new
                         var newContentType = await CreateContentTypeFromDTO(elementTypeDto, importedDataTypes);
                         await contentTypeService.CreateAsync(newContentType, currentUser);
-                        result.ElementTypes.Created++;
-                        logger.LogInformation("Created element type: {Alias}", elementTypeDto.Alias);
+                        counts.Created++;
+                        logger.LogInformation("Created {TypeLabel}: {Alias}", typeLabel, elementTypeDto.Alias);
                     }
                 }
                 catch (Exception ex)
                 {
-                    result.ElementTypes.Failed++;
-                    logger.LogError(ex, "Failed to import element type: {Alias}", elementTypeDto.Alias);
+                    counts.Failed++;
+                    logger.LogError(ex, "Failed to import {TypeLabel}: {Alias}", typeLabel, elementTypeDto.Alias);
                 }
             }
 

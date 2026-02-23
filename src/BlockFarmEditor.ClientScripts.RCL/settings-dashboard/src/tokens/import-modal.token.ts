@@ -5,6 +5,7 @@ export interface ImportModalData {}
 export interface ImportModalResult {
     file?: File;
     overwriteElementTypes: boolean;
+    overwriteCompositions: boolean;
     overwriteBlockDefinitions: boolean;
     overwritePartialViews: boolean;
     overwriteDataTypes: boolean;

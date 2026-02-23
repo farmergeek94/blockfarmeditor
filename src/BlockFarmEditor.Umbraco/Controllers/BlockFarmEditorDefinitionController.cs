@@ -82,7 +82,8 @@ namespace BlockFarmEditor.Umbraco.Controllers
         /// Import comprehensive package from ZIP file or server folder.
         /// </summary>
         /// <param name="file">Optional ZIP file to import</param>
-        /// <param name="overwriteElementTypes">Whether to overwrite existing element types (includes compositions)</param>
+        /// <param name="overwriteElementTypes">Whether to overwrite existing element types</param>
+        /// <param name="overwriteCompositions">Whether to overwrite existing compositions</param>
         /// <param name="overwriteBlockDefinitions">Whether to overwrite existing block definitions</param>
         /// <param name="overwritePartialViews">Whether to overwrite existing partial views</param>
         /// <param name="overwriteDataTypes">Whether to overwrite existing data types</param>
@@ -92,6 +93,7 @@ namespace BlockFarmEditor.Umbraco.Controllers
         public async Task<IActionResult> ImportPackage(
             IFormFile? file, 
             [FromQuery] bool overwriteElementTypes = true,
+            [FromQuery] bool overwriteCompositions = true,
             [FromQuery] bool overwriteBlockDefinitions = true,
             [FromQuery] bool overwritePartialViews = true,
             [FromQuery] bool overwriteDataTypes = false)
@@ -112,7 +114,7 @@ namespace BlockFarmEditor.Umbraco.Controllers
                     package = await exportService.ReadFromFolderAsync();
                 }
 
-                var importResult = await exportService.ImportPackageAsync(package, overwriteElementTypes, overwriteBlockDefinitions, overwritePartialViews, overwriteDataTypes);
+                var importResult = await exportService.ImportPackageAsync(package, overwriteElementTypes, overwriteCompositions, overwriteBlockDefinitions, overwritePartialViews, overwriteDataTypes);
                 blockDefinitionService.ClearCache();
 
                 return Ok(new
@@ -120,6 +122,7 @@ namespace BlockFarmEditor.Umbraco.Controllers
                     message = "Package imported successfully",
                     definitions = importResult.Definitions.Imported,
                     elementTypes = importResult.ElementTypes.Imported,
+                    compositions = importResult.Compositions.Imported,
                     dataTypes = importResult.DataTypes.Imported,
                     partialViews = importResult.PartialViews.Imported
                 });
