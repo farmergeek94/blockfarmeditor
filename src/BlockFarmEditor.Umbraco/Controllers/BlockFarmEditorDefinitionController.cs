@@ -52,6 +52,7 @@ namespace BlockFarmEditor.Umbraco.Controllers
         /// <param name="request">Export options including definition keys and download flag</param>
         /// <returns>OK or ZIP file depending on download flag</returns>
         [HttpPost]
+        [Authorize(Policy = AuthorizationPolicies.SectionAccessSettings)]
         public async Task<IActionResult> ExportPackage([FromBody] ExportPackageRequest request)
         {
             try
@@ -87,6 +88,7 @@ namespace BlockFarmEditor.Umbraco.Controllers
         /// <param name="overwriteDataTypes">Whether to overwrite existing data types</param>
         /// <returns>Import result</returns>
         [HttpPost]
+        [Authorize(Policy = AuthorizationPolicies.SectionAccessSettings)]
         public async Task<IActionResult> ImportPackage(
             IFormFile? file, 
             [FromQuery] bool overwriteElementTypes = true,
@@ -134,6 +136,7 @@ namespace BlockFarmEditor.Umbraco.Controllers
         /// </summary>
         /// <returns>List of definitions with key, alias, category</returns>
         [HttpGet]
+        [Authorize(Policy = AuthorizationPolicies.SectionAccessSettings)]
         public async Task<IActionResult> Exportable()
         {
             try
@@ -197,6 +200,7 @@ namespace BlockFarmEditor.Umbraco.Controllers
         /// <param name="request">The definition to create</param>
         /// <returns>The created definition</returns>
         [HttpPost]
+        [Authorize(Policy = AuthorizationPolicies.SectionAccessSettings)]
         public async Task<IActionResult> Create([FromBody] CreateBlockFarmEditorDefinitionRequest request)
         {
             if (!ModelState.IsValid)
@@ -250,6 +254,7 @@ namespace BlockFarmEditor.Umbraco.Controllers
         /// <param name="request">The updated definition data</param>
         /// <returns>The updated definition</returns>
         [HttpPut]
+        [Authorize(Policy = AuthorizationPolicies.SectionAccessSettings)]
         public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateBlockFarmEditorDefinitionRequest request)
         {
             if (!ModelState.IsValid)
