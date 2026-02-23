@@ -66,13 +66,6 @@ namespace BlockFarmEditor.USync.BlockFarmEditorLayouts
 
             var item = await FindItemAsync(key);
 
-            var isNew = false;
-
-            if(item == null)
-            {
-                isNew = true;
-            }
-
             var user = userService.GetUserById(-1); // admin user
 
             item ??= new BlockFarmEditorLayoutDTO

@@ -91,6 +91,8 @@ Docs: https://blockfarmeditor.com/readme/layouts/
 
 ## History
 ### Recent releases
+- **17.2.7**: Comprehensive Import/Export for Block Definitions.
+  - Restricted definition updates permissions to require Settings Access.
 - **17.2.6**: Removed stream reset.
 - **17.2.5**: Added support for published content and culture in block viewcomponents.
 - **17.2.4**: Assembly loading improvements and ViewComponent bugfix.

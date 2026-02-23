@@ -13,7 +13,7 @@ namespace BlockFarmEditor.Umbraco.TagHelpers
 
         [ViewContext]
         [HtmlAttributeNotBound]
-        public ViewContext ViewContext { get; set; }
+        public required ViewContext ViewContext { get; set; }
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {

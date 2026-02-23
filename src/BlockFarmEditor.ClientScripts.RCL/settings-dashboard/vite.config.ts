@@ -3,7 +3,11 @@ import { defineConfig } from "vite";
 export default defineConfig({
     build: {
         lib: {
-            entry: "src/settings-dashboard.ts", // your web component source file
+            entry: {
+                "settings-dashboard": "src/settings-dashboard.ts", // your web component source file
+                "bf-export-modal": "src/components/bf-export-modal.ts", // export modal component
+                "bf-import-modal": "src/components/bf-import-modal.ts", // import modal component
+            },
             formats: ["es"],
         },
         outDir: "../wwwroot/settings-dashboard/dist", // all compiled files will be placed here

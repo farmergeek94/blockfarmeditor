@@ -5,10 +5,10 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-      <VersionPrefix>17.2.0</VersionPrefix>
+      <VersionPrefix>17.2.7</VersionPrefix>
       <PackageIcon>BlockFarmEditorIcon.png</PackageIcon>
       <PackageReadmeFile>readme.md</PackageReadmeFile>
-    <PackageReleaseNotes>Update to Umbraco 17.2.0</PackageReleaseNotes>
+    <PackageReleaseNotes>Comprehensive Import/Export for Block Definitions.</PackageReleaseNotes>
       <PackageOutputPath>../</PackageOutputPath>
       <Title>Block Farm Editor Core</Title>
       <Description>Block Farm Editor Core Files</Description>

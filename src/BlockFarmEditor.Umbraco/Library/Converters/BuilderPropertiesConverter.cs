@@ -131,7 +131,7 @@ public class BuilderPropertiesConverter(IServiceProvider serviceProvider) : Json
         }
 
         // Create the element using Umbraco 16's factory pattern
-        var element = new PublishedElement(contentType, unique, rawPropertyValues, false, PropertyCacheLevel.Element, variationContextAccessor.VariationContext, null);
+        var element = new PublishedElement(contentType, unique, rawPropertyValues, false, PropertyCacheLevel.Element, variationContextAccessor.VariationContext!, null);
 
         var properties = modelFactory.CreateModel(element);
 

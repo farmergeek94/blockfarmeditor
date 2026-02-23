@@ -2,11 +2,16 @@ import { css, html, type PropertyValues } from 'lit'
 import { customElement, state } from 'lit/decorators.js'
 import type { UmbPropertyEditorUiElement } from '@umbraco-cms/backoffice/property-editor'
 import { UmbLitElement } from '@umbraco-cms/backoffice/lit-element'
-import { UMB_AUTH_CONTEXT, UmbAuthContext } from '@umbraco-cms/backoffice/auth'
+import { UMB_AUTH_CONTEXT, type UmbAuthContext } from '@umbraco-cms/backoffice/auth'
 import type { Layout, Layouts } from '../../models/Layout'
-import { UMB_NOTIFICATION_CONTEXT, UmbNotificationContext } from '@umbraco-cms/backoffice/notification'
+import { UMB_NOTIFICATION_CONTEXT, type UmbNotificationContext } from '@umbraco-cms/backoffice/notification'
+import { UMB_MODAL_MANAGER_CONTEXT, type UmbModalManagerContext } from '@umbraco-cms/backoffice/modal'
 import { repeat } from 'lit/directives/repeat.js'
 import { UrlHelper } from '../../helpers/UrlHelper';
+import { BLOCKFARMEDITOR_EXPORT_MODAL, type ExportModalResult } from './tokens/export-modal.token';
+import { BLOCKFARMEDITOR_IMPORT_MODAL, type ImportModalResult } from './tokens/import-modal.token';
+import './components/bf-export-modal';
+import './components/bf-import-modal';
 
 /**
  * An example element.
@@ -18,6 +23,8 @@ import { UrlHelper } from '../../helpers/UrlHelper';
 export class SettingsDashboard extends UmbLitElement implements UmbPropertyEditorUiElement {
     authContext?: UmbAuthContext
     notificationContext?: UmbNotificationContext
+    modalManager?: UmbModalManagerContext
+
     constructor() {
         super()
         this.consumeContext(UMB_AUTH_CONTEXT, (context) => {
@@ -25,6 +32,9 @@ export class SettingsDashboard extends UmbLitElement implements UmbPropertyEdito
         });
         this.consumeContext(UMB_NOTIFICATION_CONTEXT, (context) => {
             this.notificationContext = context;
+        });
+        this.consumeContext(UMB_MODAL_MANAGER_CONTEXT, (context) => {
+            this.modalManager = context;
         });
     }
 
@@ -93,59 +103,125 @@ export class SettingsDashboard extends UmbLitElement implements UmbPropertyEdito
     }
 
     #exportDefinitions() {
-        this.authContext?.getLatestToken().then(x => fetch(`${UrlHelper.getBaseUrl()}/umbraco/blockfarmeditor/definitions/export`, {
-            credentials: 'include',
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${x}`
-            }
-        }).then((response) => {
-            if (response.ok) {
-                this.notificationContext?.peek('positive', {
-                    data: {
-                        message: 'Definitions exported successfully',
+        const modal = this.modalManager?.open(this, BLOCKFARMEDITOR_EXPORT_MODAL, {});
+        modal?.onSubmit().then(async (result: ExportModalResult) => {
+            if (result && result.selectedDefinitions.length > 0) {
+                try {
+                    const token = await this.authContext?.getLatestToken();
+                    const response = await fetch(`${UrlHelper.getBaseUrl()}/umbraco/blockfarmeditor/definitions/exportpackage`, {
+                        credentials: 'include',
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            definitionKeys: result.selectedDefinitions,
+                            download: result.download
+                        })
+                    });
+
+                    if (response.ok) {
+                        if (result.download) {
+                            // Download the ZIP file
+                            const blob = await response.blob();
+                            console.log('Downloading ZIP, blob size:', blob.size);
+                            const url = window.URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = `blockfarmeditor-export-${new Date().toISOString().slice(0, 10)}.zip`;
+                            a.style.display = 'none';
+                            // Prevent router interception
+                            a.addEventListener('click', (e) => e.stopPropagation());
+                            document.body.appendChild(a);
+                            a.click();
+                            // Small delay before cleanup to ensure download starts
+                            document.body.removeChild(a);
+                            window.URL.revokeObjectURL(url);
+
+                            this.notificationContext?.peek('positive', {
+                                data: {
+                                    message: 'Package exported and downloaded successfully',
+                                }
+                            });
+                        } else {
+                            const data = await response.json();
+                            this.notificationContext?.peek('positive', {
+                                data: {
+                                    message: `Package exported successfully (${data.definitionCount} definitions)`,
+                                }
+                            });
+                        }
+                    } else {
+                        this.notificationContext?.peek('danger', {
+                            data: {
+                                message: 'Failed to export package: ' + response.statusText,
+                            }
+                        });
                     }
-                });
-            } else {
-                this.notificationContext?.peek('danger', {
-                    data: {
-                        message: 'Failed to export definitions: ' + response.statusText,
-                    },
-                    action: {
-                        label: 'Retry',
-                        onClick: () => this.#exportDefinitions()
-                    }
-                });
+                } catch (error) {
+                    this.notificationContext?.peek('danger', {
+                        data: {
+                            message: 'Failed to export package: ' + (error as Error).message,
+                        }
+                    });
+                }
             }
-        }));
+        }).catch(() => {
+            // Modal was cancelled, do nothing
+        });
     }
 
     #importDefinitions() {
-        this.authContext?.getLatestToken().then(x => fetch(`${UrlHelper.getBaseUrl()}/umbraco/blockfarmeditor/definitions/import`, {
-            credentials: 'include',
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${x}`
-            }
-        }).then((response) => {
-            if (response.ok) {
-                this.notificationContext?.peek('positive', {
-                    data: {
-                        message: 'Definitions imported successfully',
-                    }
+        const modal = this.modalManager?.open(this, BLOCKFARMEDITOR_IMPORT_MODAL, {});
+        modal?.onSubmit().then(async (result: ImportModalResult) => {
+            try {
+                const token = await this.authContext?.getLatestToken();
+                const formData = new FormData();
+                
+                if (result.file) {
+                    formData.append('file', result.file);
+                }
+
+                const url = new URL(`${UrlHelper.getBaseUrl()}/umbraco/blockfarmeditor/definitions/importpackage`, window.location.origin);
+                url.searchParams.set('overwriteElementTypes', result.overwriteElementTypes.toString());
+                url.searchParams.set('overwriteBlockDefinitions', result.overwriteBlockDefinitions.toString());
+                url.searchParams.set('overwritePartialViews', result.overwritePartialViews.toString());
+                url.searchParams.set('overwriteDataTypes', result.overwriteDataTypes.toString());
+
+                const response = await fetch(url.toString(), {
+                    credentials: 'include',
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: formData
                 });
-            } else {
+
+                if (response.ok) {
+                    const data = await response.json();
+                    this.notificationContext?.peek('positive', {
+                        data: {
+                            message: `Package imported successfully: ${data.definitions} definitions, ${data.elementTypes} element types, ${data.dataTypes} data types, ${data.partialViews} partial views`,
+                        }
+                    });
+                } else {
+                    this.notificationContext?.peek('danger', {
+                        data: {
+                            message: 'Failed to import package: ' + response.statusText,
+                        }
+                    });
+                }
+            } catch (error) {
                 this.notificationContext?.peek('danger', {
                     data: {
-                        message: 'Failed to import definitions: ' + response.statusText,
-                    },
-                    action: {
-                        label: 'Retry',
-                        onClick: () => this.#importDefinitions()
+                        message: 'Failed to import package: ' + (error as Error).message,
                     }
                 });
             }
-        }));
+        }).catch(() => {
+            // Modal was cancelled, do nothing
+        });
     }
 
     #deleteLayout(layout: Layout) {
@@ -181,15 +257,22 @@ export class SettingsDashboard extends UmbLitElement implements UmbPropertyEdito
 
     render() {
         return html`
-    <uui-box class="text-left" headline="Definition Actions">
+    <uui-box class="text-left" headline="Export & Import">
       <div>
-        <p style="margin-top: 0;">Definitions will be saved under the folder {MainProject}/BlockFarmEditor/Definitions/
+        <p style="margin-top: 0;">
+          Export or import complete block packages including definitions, element types, data types, and partial views.
           <br/>
-          This can be used to share definitions between projects, for backup purposes, or to build starter packages.
-      </p>
+          Packages are saved to {MainProject}/BlockFarmEditor/ folder and can optionally be downloaded as ZIP files.
+        </p>
         <div class="button-group">
-          <uui-button look="primary" @click="${this.#exportDefinitions}">Export</uui-button>
-          <uui-button look="primary" @click="${this.#importDefinitions}">Import</uui-button>
+          <uui-button look="primary" @click="${this.#exportDefinitions}">
+            <umb-icon name="icon-out"></umb-icon>
+            Export Package
+          </uui-button>
+          <uui-button look="primary" @click="${this.#importDefinitions}">
+            <umb-icon name="icon-sort"></umb-icon>
+            Import Package
+          </uui-button>
         </div>
       </div>
     </uui-box>

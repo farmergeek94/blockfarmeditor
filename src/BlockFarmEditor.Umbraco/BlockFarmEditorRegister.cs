@@ -19,6 +19,8 @@ namespace BlockFarmEditor.Umbraco
             builder.Services.AddSingleton<IBlockFarmEditorLayoutService, BlockFarmEditorLayoutService>();
             builder.Services.AddScoped<IBlockFarmEditorRenderService, BlockFarmEditorRenderService>();
             builder.Services.AddScoped<IBlockFarmEditorContext, BlockFarmEditorContext>();
+            builder.Services.AddScoped<IBlockFarmEditorExportService, BlockFarmEditorExportService>();
+            builder.Services.AddScoped<IFolderStructureService, FolderStructureService>();
 
             builder.AddNotificationAsyncHandler<ContentTypeDeletedNotification, BlockFarmEditorDefinitionCleanUp>();
 
