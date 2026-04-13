@@ -350,7 +350,7 @@ export class DefinitionsWorkspace extends UmbLitElement {
 
   private _updateFormData(field: string, value: any) {
     if (field === 'category') {
-      if(this.categories.includes(value)) {
+      if(this.categories.includes(value) && value.length > 0) {
         this.newCategory = false;
       } else {
         this.newCategory = true;
@@ -365,6 +365,16 @@ export class DefinitionsWorkspace extends UmbLitElement {
 
   private _onSubmit() {
     this.saving = true;
+    if (this.newCategory && this.formData.category.length < 1 ) {
+      this.notificationContext?.peek("danger", {
+        data: {
+          message: 'Category name cannot be empty.',
+          headline: 'Invalid Category'
+        }
+      });
+      return;
+    }
+
     if (this.formData.id > 0) {
       this.updateDefinition()
     } else {
