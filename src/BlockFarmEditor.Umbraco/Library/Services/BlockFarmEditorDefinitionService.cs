@@ -26,7 +26,7 @@ namespace BlockFarmEditor.Umbraco.Library.Services
 
         public async Task<BlockFarmEditorDefinitionDTO?> GetByKeyAsync(IUmbracoDatabase umbracoDatabase, Guid key)
         {
-            var result = await umbracoDatabase.SingleOrDefaultAsync<BlockFarmEditorDefinitionDTO>($"SELECT * FROM {BlockFarmEditorDefinitionDTO.TableName} WHERE Key = @0", key);
+            var result = await umbracoDatabase.SingleOrDefaultAsync<BlockFarmEditorDefinitionDTO>($"SELECT * FROM {BlockFarmEditorDefinitionDTO.TableName} WHERE [Key] = @0", key);
             return result;
         }
 
@@ -60,7 +60,7 @@ namespace BlockFarmEditor.Umbraco.Library.Services
 
         public async Task<BlockFarmEditorDefinitionDTO?> UpdateAsync(IUmbracoDatabase umbracoDatabase, int id, string type, string viewPath, string category, bool enabled, Guid updatedBy)
         {
-            var existing = await umbracoDatabase.SingleOrDefaultAsync<BlockFarmEditorDefinitionDTO>($"SELECT * FROM {BlockFarmEditorDefinitionDTO.TableName} WHERE Id = @0", id);
+            var existing = await umbracoDatabase.SingleOrDefaultAsync<BlockFarmEditorDefinitionDTO>($"SELECT * FROM {BlockFarmEditorDefinitionDTO.TableName} WHERE [Id] = @0", id);
             if (existing == null)
             {
                 return null;

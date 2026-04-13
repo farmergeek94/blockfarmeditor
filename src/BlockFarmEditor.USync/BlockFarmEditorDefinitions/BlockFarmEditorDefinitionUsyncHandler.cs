@@ -79,7 +79,7 @@ namespace BlockFarmEditor.USync.BlockFarmEditorLayouts
 
         protected override string GetItemName(BlockFarmEditorDefinitionDTO item)
         {
-            return item.Key.ToString();
+            return item.ContentTypeAlias.ToString();
         }
     }
 }
