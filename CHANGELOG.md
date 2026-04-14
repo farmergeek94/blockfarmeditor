@@ -2,6 +2,10 @@
 
 All notable changes to this project are documented in this file.
 
+## 17.2.9
+- correcting validation for the categories.
+- Resolved bug importing into sql db.
+
 ## 17.2.8
 - Updated the export and import to include compositions as well as bugfix for no group property types.
 

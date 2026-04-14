@@ -18,7 +18,7 @@
     <PackageReleaseNotes>Updated the export and import to include compositions as well as bugfix for no group property types.</PackageReleaseNotes>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <VersionPrefix>17.2.8</VersionPrefix>
+    <VersionPrefix>17.2.9</VersionPrefix>
     <PackageOutputPath>../</PackageOutputPath>
     <PackageReadmeFile>readme.md</PackageReadmeFile>
   </PropertyGroup>
@@ -51,7 +51,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Umbraco.Cms" Version="17.2.0" />
+    <PackageReference Include="Umbraco.Cms" Version="17.3.3" />
   </ItemGroup>
 
 </Project>

@@ -5,10 +5,11 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <Title>Block Farm Editor USync Package</Title>
-      <VersionPrefix>17.1.2</VersionPrefix>
+      <VersionPrefix>17.1.3</VersionPrefix>
       <PackageOutputPath>..\</PackageOutputPath>
       <Description>Package allowing full USync integration for BlockFarmEditor
-17.1.2 Switched to only pulling in the core library. </Description>
+17.1.2 Switched to only pulling in the core library.
+17.1.3 Resolved an issue with importing to a SQL DB </Description>
       <PackageReadmeFile>README.md</PackageReadmeFile>
       <PackageReleaseNotes>Switched to only pulling in the core library. </PackageReleaseNotes>
       <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
@@ -17,7 +18,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="uSync" Version="17.0.2" />
+    <PackageReference Include="uSync" Version="17.3.0" />
   </ItemGroup>
 
   <ItemGroup>

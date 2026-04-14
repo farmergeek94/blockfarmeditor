@@ -12,7 +12,7 @@
     <PackageIcon>BlockFarmEditorIcon.png</PackageIcon>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-    <VersionPrefix>17.2.8</VersionPrefix>
+    <VersionPrefix>17.2.9</VersionPrefix>
     <PackageOutputPath>../</PackageOutputPath>
     <PackageReadmeFile>readme.md</PackageReadmeFile>
     <Title>Client Package for Block Farm Editor</Title>
