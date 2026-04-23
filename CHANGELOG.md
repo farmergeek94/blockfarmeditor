@@ -2,6 +2,9 @@
 
 All notable changes to this project are documented in this file.
 
+## 17.2.10
+- Updated to lock down the edit mode to only work in preview mode.
+
 ## 17.2.9
 - correcting validation for the categories.
 - Resolved bug importing into sql db.

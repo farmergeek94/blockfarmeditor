@@ -21,7 +21,7 @@ namespace BlockFarmEditor.Umbraco.Library.Services
         public const string BlockFarmEditorEditorAlias = "blockfarmeditor_page_propertyeditor";
         private bool _isEditMode = false;
         private bool _isPreview = false;
-        public bool IsEditMode => _isEditMode;
+        public bool IsEditMode => _isEditMode && _isPreview;
 
         public bool IsPreview => _isPreview;
 
@@ -47,7 +47,6 @@ namespace BlockFarmEditor.Umbraco.Library.Services
                 bool isEditMode = editmode == "true";
                 var content = context.PublishedRequest?.PublishedContent;
                 var domain = (context.PublishedRequest?.Domain?.Uri ?? context.CleanedUmbracoUrl).Host;
-                _isPreview = context.InPreviewMode;
 
                 await SetPageDefinition(context, content, domain, context.PublishedRequest?.Culture, isEditMode, context.InPreviewMode);
             }
@@ -120,6 +119,7 @@ namespace BlockFarmEditor.Umbraco.Library.Services
             {
                 ContentUnique = content.Key;
                 _isEditMode = editMode;
+                _isPreview = preview;
                 if(content.HasProperty(BlockFarmEditorEditorAlias))
                 {
                     content = await ValidateMemberAccessAsync(content, context);
