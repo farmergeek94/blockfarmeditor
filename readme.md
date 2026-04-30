@@ -91,10 +91,13 @@ Docs: https://blockfarmeditor.com/readme/layouts/
 
 ## History
 ### Recent releases
+
+- **17.2.11**: Resolved a bug where the block type names were not coming through.  
+- **17.2.10**: Updated to lock down the edit mode to only work in preview mode.
+- **17.2.9**: 
+  - correcting validation for the categories.
+  - Resolved bug importing into sql db.
 - **17.2.8**: Updated the export and import to include compositions as well as bugfix for no group property types.
 - **17.2.7**: Comprehensive Import/Export for Block Definitions.
-- **17.2.6**: Removed stream reset.
-- **17.2.5**: Added support for published content and culture in block viewcomponents.
-- **17.2.4**: Assembly loading improvements and ViewComponent bugfix.
 
 Full changelog: https://github.com/farmergeek94/blockfarmeditor/blob/main/CHANGELOG.md
