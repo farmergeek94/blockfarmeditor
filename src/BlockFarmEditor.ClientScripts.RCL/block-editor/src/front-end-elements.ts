@@ -408,7 +408,10 @@ export class BlockArea extends BlockElement {
                         }
                     }));
                 } else {
-                    window.blockFarmEditor.displayMessage('warning', `The block type "${window.blockFarmEditorDefinitions[movingBlock?.contentTypeKey ?? ""]}" cannot be added to ${window.blockFarmEditorDefinitions[targetBlockArea?.contentTypeKey ?? ""]}.`, 'Block Farm Editor');
+                    const parentBlockPath = this.uniquePath.split('/').slice(0, -1).join('/');
+                    const targetParentBlock = window.blockFarmEditor.getBlock(parentBlockPath);
+                    console.log("Target Block", targetParentBlock, "Moving Block", movingBlock, "Allowed Blocks", allowedBlocks, "Target Area", targetBlockArea);
+                    window.blockFarmEditor.displayMessage('warning', `The block type "${window.blockFarmEditorDefinitions[movingBlock?.contentTypeKey ?? ""]}" cannot be added to ${window.blockFarmEditorDefinitions[targetParentBlock?.contentTypeKey ?? ""]}.  \n Allowed blocks: ${allowedBlocks.map(key => window.blockFarmEditorDefinitions[key]).join(', ')}`, 'Block Farm Editor');
                 }
             }
         }
