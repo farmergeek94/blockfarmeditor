@@ -2,6 +2,9 @@
 
 All notable changes to this project are documented in this file.
 
+## 17.2.12
+- Refactor block definitions retrieval to use BlockDefinitions type and flatten data structure
+
 ## 17.2.11
 - Resolved a bug where the block type names were not coming through.  
 

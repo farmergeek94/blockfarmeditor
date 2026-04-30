@@ -19,6 +19,7 @@ import { GenerateGuid } from '../../helpers/GuidHelper'
 import { type RenderedBlock } from './models/RenderedBlock'
 import { BlockElement } from './components/BlockElement';
 import { sendPropertiesMessage } from "./helpers/Actions.ts"
+import type { BlockDefinitions } from "../../models/BlockDefinitions.ts"
 /**
  * An example element.
  *
@@ -314,9 +315,9 @@ export class BlockArea extends BlockElement {
                 } else {
                     throw new Error('Failed to fetch block definitions:' + response.statusText);
                 }
-            }).then((data: {Containers: BlockDefinition<IBuilderProperties>[], Blocks: BlockDefinition<IBuilderProperties>[]}) => {
-                
-                return [...(data.Blocks ?? []), ...(data.Containers ?? [])].map(def => def.contentTypeKey).filter(key => key !== undefined) as string[];
+            }).then((data: BlockDefinitions) => {
+                var allBlocks = Object.values(data).flat();
+                return  allBlocks.map(def => def.contentTypeKey).filter(key => key !== undefined) as string[];
             });
     }
 
