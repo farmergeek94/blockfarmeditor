@@ -1,3 +1,4 @@
+using BlockFarmEditor.Umbraco.Core.Interfaces;
 using BlockFarmEditor.Umbraco.Core.Models.BuilderModels;
 using BlockFarmEditor.Umbraco.Library.Services;
 using BlockFarmEditor.Umbraco.Tests.Helpers;
@@ -25,6 +26,7 @@ public class BlockFarmEditorRenderServiceTests
 
     private readonly Mock<IViewComponentHelper> _viewComponentHelper = new();
     private readonly Mock<IHtmlHelper> _htmlHelper = new();
+    private readonly Mock<IBlockFarmEditorContext> _context = new();
     private readonly ViewContext _viewContext = new();
 
     private void UseServices(Action<ServiceCollection>? configure = null)
@@ -39,6 +41,7 @@ public class BlockFarmEditorRenderServiceTests
 
     private BlockFarmEditorRenderService Service(Type? viewComponentType = null, string viewPath = "~/Views/Partials/Hero.cshtml") =>
         new(Definitions.ToService(Definitions.Expanded("heroBlock", ContentTypeKey, viewPath: viewPath, viewComponentType: viewComponentType)).Object,
+            _context.Object,
             NullLogger<BlockFarmEditorRenderService>.Instance);
 
     [Fact]
@@ -160,8 +163,29 @@ public class BlockFarmEditorRenderServiceTests
 
         Assert.NotNull(result);
         var html = result.Render();
-        Assert.Contains("class=\"block-render-error\"", html);
+        Assert.Contains("alert alert-danger", html);
         Assert.Contains("display:none;", html);
+        Assert.Contains(ContentTypeKey.ToString(), html);
+        // Error details never reach the public facing site
+        Assert.DoesNotContain("exploded", html);
+    }
+
+    [Fact]
+    public async Task WhenRenderingThrows_InPreview_ShowsTheEncodedErrorMessage()
+    {
+        UseViewComponentHelper();
+        _context.SetupGet(x => x.IsPreview).Returns(true);
+        _htmlHelper
+            .Setup(x => x.PartialAsync(It.IsAny<string>(), It.IsAny<object>(), It.IsAny<ViewDataDictionary>()))
+            .ThrowsAsync(new InvalidOperationException("view <exploded>"));
+
+        var result = await Service().RenderComponent(_htmlHelper.Object, Definitions.Block(ContentTypeKey));
+
+        Assert.NotNull(result);
+        var html = result.Render();
+        Assert.Contains("alert alert-danger", html);
+        Assert.Contains("white-space:pre-wrap;", html);
+        Assert.DoesNotContain("display:none;", html);
         Assert.Contains(ContentTypeKey.ToString(), html);
         Assert.Contains("view &lt;exploded&gt;", html);
         Assert.DoesNotContain("<exploded>", html);
@@ -175,6 +199,6 @@ public class BlockFarmEditorRenderServiceTests
         var result = await Service().RenderComponent(_htmlHelper.Object, new BlockDefinition<IPublishedElement>());
 
         Assert.NotNull(result);
-        Assert.Contains("block-render-error", result.Render());
+        Assert.Contains("alert alert-danger", result.Render());
     }
 }
