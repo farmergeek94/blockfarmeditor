@@ -240,6 +240,13 @@ namespace BlockFarmEditor.Umbraco.Controllers
                     return NotFound($"Definition with Key {request.Key} not found");
                 }
 
+                layout.Description = request.Description;
+                layout.Layout = request.Layout;
+                layout.Category = request.Category;
+                layout.Type = request.Type;
+                layout.Icon = request.Icon;
+                layout.Enabled = request.Enabled;
+
                 var result = await layoutService.UpdateAsync(umbracoDatabase, id, layout, currentUser);
                 if (result == null)
                 {

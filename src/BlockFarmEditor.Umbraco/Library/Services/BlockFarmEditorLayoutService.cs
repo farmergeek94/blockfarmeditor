@@ -64,6 +64,8 @@ namespace BlockFarmEditor.Umbraco.Library.Services
             }
 
             dto.Id = id;
+            dto.UpdateDate = DateTime.UtcNow;
+            dto.UpdatedBy = updatedBy;
 
             await umbracoDatabase.UpdateAsync(dto);
 
@@ -71,19 +73,20 @@ namespace BlockFarmEditor.Umbraco.Library.Services
 
             return new BlockFarmEditorLayoutDTO
             {
-                Id = existing.Id,
-                Key = existing.Key,
-                Name = existing.Name,
-                Description = existing.Description,
-                Layout = existing.Layout,
-                Category = existing.Category,
-                Type = existing.Type,
+                Id = dto.Id,
+                Key = dto.Key,
+                Name = dto.Name,
+                Description = dto.Description,
+                Layout = dto.Layout,
+                Category = dto.Category,
+                Type = dto.Type,
                 Icon = dto.Icon,
-                Enabled = existing.Enabled,
-                CreateDate = existing.CreateDate,
-                UpdateDate = existing.UpdateDate,
-                CreatedBy = existing.CreatedBy,
-                UpdatedBy = existing.UpdatedBy
+                Enabled = dto.Enabled,
+                CreateDate = dto.CreateDate,
+                UpdateDate = dto.UpdateDate,
+                CreatedBy = dto.CreatedBy,
+                UpdatedBy = dto.UpdatedBy,
+                DeleteDate = dto.DeleteDate
             };
         }
 
