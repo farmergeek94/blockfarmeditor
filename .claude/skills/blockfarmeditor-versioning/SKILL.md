@@ -1,13 +1,13 @@
 ---
 name: blockfarmeditor-versioning
-description: Bump BlockFarmEditor package versions and release notes - prompts for projects, version, and release notes, then updates VersionPrefix and PackageReleaseNotes in the .csproj files plus CHANGELOG.md and the readme.md history. Use when the user asks to bump, update, or increment the version, or to prepare release notes for BlockFarmEditor.
+description: Bump BlockFarmEditor package versions and release notes - prompts for projects, version, and release notes, then updates VersionPrefix and PackageReleaseNotes in the .csproj files, the frontend package.json versions, plus CHANGELOG.md and the readme.md history. Use when the user asks to bump, update, or increment the version, or to prepare release notes for BlockFarmEditor.
 ---
 
 # BlockFarmEditor Versioning Skill
 
 ## Description
 
-Automates version bumping and release note updates for BlockFarmEditor projects. Prompts the user for project selection, version, release notes, and readme history, then applies changes to .csproj and readme.md files.
+Automates version bumping and release note updates for BlockFarmEditor projects. Prompts the user for project selection, version, release notes, and readme history, then applies changes to the .csproj files, the frontend package.json files, CHANGELOG.md, and readme.md.
 
 ## Workflow Steps
 
@@ -30,10 +30,20 @@ Automates version bumping and release note updates for BlockFarmEditor projects.
      - Update `<VersionPrefix>` to the new version.  
      - Update `<PackageReleaseNotes>` with the new comment.
 
-5. **Update CHANGELOG.md:**
+5. **Update frontend package versions:**
+   - Only when BlockFarmEditor.ClientScripts.RCL is one of the selected projects.
+   - The frontend projects live in `src/BlockFarmEditor.ClientScripts.RCL/`:
+     - property-editor
+     - block-editor
+     - settings-dashboard
+     - definitions-workspace
+   - In each one, run `npm version <new version> --no-git-tag-version --allow-same-version` so that `package.json` and `package-lock.json` are updated together. Do not hand-edit the lock file.
+   - Keep all four on the same version as the BlockFarmEditor.ClientScripts.RCL `<VersionPrefix>`.
+
+6. **Update CHANGELOG.md:**
    - Add the new version history along with the new comment.
 
-6. **Update readme.md:**  
+7. **Update readme.md:**  
    - Add the new version history entry at the top of the version history section along with the new comment.
    - Only keep last 5 version changes.
 

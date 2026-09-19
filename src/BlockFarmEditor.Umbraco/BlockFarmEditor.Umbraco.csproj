@@ -15,10 +15,10 @@
     <PackageProjectUrl>https://blockfarmeditor.com/readme/</PackageProjectUrl>
     <PackageIcon>BlockFarmEditorIcon.png</PackageIcon>
     <PackageTags>umbraco;visual;editor;block;blocks;builder;umbraco-marketplace;</PackageTags>
-    <PackageReleaseNotes>Updated the export and import to include compositions as well as bugfix for no group property types.</PackageReleaseNotes>
+    <PackageReleaseNotes>Upgraded to Umbraco 17.7.0 and uSync 17.4.2. Refactored block data and property value handling. Improved block render error handling - details only shown in preview.</PackageReleaseNotes>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <VersionPrefix>17.2.12</VersionPrefix>
+    <VersionPrefix>17.7.0</VersionPrefix>
     <PackageOutputPath>../</PackageOutputPath>
     <PackageReadmeFile>readme.md</PackageReadmeFile>
   </PropertyGroup>

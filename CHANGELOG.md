@@ -2,6 +2,11 @@
 
 All notable changes to this project are documented in this file.
 
+## 17.7.0
+- Upgraded to Umbraco 17.7.0 and uSync 17.4.2.
+- Refactored block data and property value handling.
+- Improved block render error handling - details only shown in preview.
+
 ## 17.2.12
 - Refactor block definitions retrieval to use BlockDefinitions type and flatten data structure
 
