@@ -67,6 +67,25 @@ Projects to version together:
 - `BlockFarmEditor.USync`
 
 See `.claude/skills/blockfarmeditor-versioning/SKILL.md` for the versioning workflow.
+## Testing
+
+Unit tests live in `tests/`, one project per library, using xUnit + Moq (shared settings in `tests/Directory.Build.props`):
+
+| Project | Covers |
+|---------|--------|
+| `tests/BlockFarmEditor.Umbraco.Core.Tests/` | Attributes, DTOs (incl. XML/DB mapping contracts), models, table migrations |
+| `tests/BlockFarmEditor.Umbraco.Tests/` | Services, controllers, JSON converters, property editor, tag helpers, notification handlers, DI registration |
+| `tests/BlockFarmEditor.USync.Tests/` | uSync serializers and handlers |
+
+Run everything with `dotnet test BlockFarmEditor.slnx`, or a single project with `dotnet test tests/<project>`.
+
+Conventions:
+
+- `BlockFarmEditor.Umbraco` exposes its internals to `BlockFarmEditor.Umbraco.Tests` via `InternalsVisibleTo`; use `NullLogger<T>` rather than mocking `ILogger<T>` of an internal type.
+- Many Umbraco/NPoco calls are extension methods (`GetAllElementTypes()`, `HasAccessAsync()`, `SingleOrDefaultAsync(sql, arg)`, `content.Value()`); mock the interface member they forward to - see `tests/BlockFarmEditor.Umbraco.Tests/Helpers/`.
+- Tests touching the relative `BlockFarmEditor/` export folder change the working directory and must be in the `WorkingDirectoryCollection` (non-parallel).
+- A test for behaviour that is currently broken is kept as `[Fact(Skip = "Known bug: ...")]`; remove the `Skip` when fixing the bug.
+
 ## Common Tasks
 
 ### Creating a New Tag Helper

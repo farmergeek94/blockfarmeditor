@@ -54,4 +54,8 @@
     <PackageReference Include="Umbraco.Cms" Version="17.3.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="BlockFarmEditor.Umbraco.Tests" />
+  </ItemGroup>
+
 </Project>

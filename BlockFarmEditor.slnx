@@ -7,6 +7,12 @@
   <Folder Name="/Solution Items/">
     <File Path="readme.md" />
   </Folder>
+  <Folder Name="/tests/">
+    <File Path="tests/Directory.Build.props" />
+    <Project Path="tests/BlockFarmEditor.Umbraco.Core.Tests/BlockFarmEditor.Umbraco.Core.Tests.csproj" />
+    <Project Path="tests/BlockFarmEditor.Umbraco.Tests/BlockFarmEditor.Umbraco.Tests.csproj" />
+    <Project Path="tests/BlockFarmEditor.USync.Tests/BlockFarmEditor.USync.Tests.csproj" />
+  </Folder>
   <Project Path="BlockFarmEditor/BlockFarmEditor.csproj" />
   <Project Path="src/BlockFarmEditor.ClientScripts.RCL/BlockFarmEditor.ClientScripts.RCL.csproj" />
   <Project Path="src/BlockFarmEditor.Umbraco.Core/BlockFarmEditor.Umbraco.Core.csproj" />
