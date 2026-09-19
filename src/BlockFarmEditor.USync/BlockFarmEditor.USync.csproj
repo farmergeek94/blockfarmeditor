@@ -5,13 +5,13 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <Title>Block Farm Editor USync Package</Title>
-      <VersionPrefix>17.1.3</VersionPrefix>
+      <VersionPrefix>17.7.0</VersionPrefix>
       <PackageOutputPath>..\</PackageOutputPath>
       <Description>Package allowing full USync integration for BlockFarmEditor
 17.1.2 Switched to only pulling in the core library.
 17.1.3 Resolved an issue with importing to a SQL DB </Description>
       <PackageReadmeFile>README.md</PackageReadmeFile>
-      <PackageReleaseNotes>Switched to only pulling in the core library. </PackageReleaseNotes>
+      <PackageReleaseNotes>Upgraded to Umbraco 17.7.0 and uSync 17.4.2. Refactored block data and property value handling. Improved block render error handling - details only shown in preview.</PackageReleaseNotes>
       <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
       <Copyright>© 2026 Joshua Hess. All rights reserved.</Copyright>
       <PackageLicenseExpression>MIT</PackageLicenseExpression>

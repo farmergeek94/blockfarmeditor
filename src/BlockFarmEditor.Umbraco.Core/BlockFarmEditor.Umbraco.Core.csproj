@@ -5,10 +5,10 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-      <VersionPrefix>17.2.8</VersionPrefix>
+      <VersionPrefix>17.7.0</VersionPrefix>
       <PackageIcon>BlockFarmEditorIcon.png</PackageIcon>
       <PackageReadmeFile>readme.md</PackageReadmeFile>
-    <PackageReleaseNotes>Updated the export and import to include compositions as well as bugfix for no group property types.</PackageReleaseNotes>
+    <PackageReleaseNotes>Upgraded to Umbraco 17.7.0 and uSync 17.4.2. Refactored block data and property value handling. Improved block render error handling - details only shown in preview.</PackageReleaseNotes>
       <PackageOutputPath>../</PackageOutputPath>
       <Title>Block Farm Editor Core</Title>
       <Description>Block Farm Editor Core Files</Description>

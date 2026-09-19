@@ -92,13 +92,15 @@ Docs: https://blockfarmeditor.com/readme/layouts/
 ## History
 ### Recent releases
 
+- **17.7.0**: 
+  - Upgraded to Umbraco 17.7.0 and uSync 17.4.2.
+  - Refactored block data and property value handling.
+  - Improved block render error handling - details only shown in preview.
 - **17.2.12**: Refactor block definitions retrieval to use BlockDefinitions type and flatten data structure
 - **17.2.11**: Resolved a bug where the block type names were not coming through.  
 - **17.2.10**: Updated to lock down the edit mode to only work in preview mode.
 - **17.2.9**: 
   - correcting validation for the categories.
   - Resolved bug importing into sql db.
-- **17.2.8**: Updated the export and import to include compositions as well as bugfix for no group property types.
-- **17.2.7**: Comprehensive Import/Export for Block Definitions.
 
 Full changelog: https://github.com/farmergeek94/blockfarmeditor/blob/main/CHANGELOG.md
