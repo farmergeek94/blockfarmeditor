@@ -23,5 +23,10 @@ namespace BlockFarmEditor.Umbraco.Library.Services
         /// Builds the published block (and its nested blocks) from stored values.  Returns null when the block has no valid unique.
         /// </summary>
         BlockDefinition<IPublishedElement>? ToBlockDefinition(BlockData block);
+
+        /// <summary>
+        /// Builds the published page from the stored page root.  Blocks without a valid unique are left out.
+        /// </summary>
+        PageDefinition ToPageDefinition(BlockData root);
     }
 }

@@ -112,6 +112,24 @@ namespace BlockFarmEditor.Umbraco.Library.Services
             return result;
         }
 
+        public PageDefinition ToPageDefinition(BlockData root)
+        {
+            var result = new PageDefinition
+            {
+                Blocks = ToBlockDefinitions(root.Blocks)
+            };
+
+            if (Guid.TryParse(root.Unique, out var unique))
+            {
+                result.Unique = unique;
+            }
+
+            return result;
+        }
+
+        private List<BlockDefinition<IPublishedElement>> ToBlockDefinitions(List<BlockData?>? blocks) =>
+            [.. (blocks ?? []).Select(x => x == null ? null : ToBlockDefinition(x)).OfType<BlockDefinition<IPublishedElement>>()];
+
         public BlockDefinition<IPublishedElement>? ToBlockDefinition(BlockData block)
         {
             if (!Guid.TryParse(block.Unique, out var unique))
@@ -121,7 +139,7 @@ namespace BlockFarmEditor.Umbraco.Library.Services
 
             var result = new BlockDefinition<IPublishedElement>
             {
-                Blocks = [.. (block.Blocks ?? []).Select(x => x == null ? null : ToBlockDefinition(x)).OfType<BlockDefinition<IPublishedElement>>()],
+                Blocks = ToBlockDefinitions(block.Blocks),
                 Unique = unique
             };
 
