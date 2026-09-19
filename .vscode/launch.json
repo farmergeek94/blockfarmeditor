@@ -8,7 +8,7 @@
             "name": "C#: BlockFarmEditor Debug",
             "type": "dotnet",
             "request": "launch",
-            "projectPath": "${workspaceFolder}/BlockFarmeditor/BlockFarmEditor.csproj"
+            "projectPath": "${workspaceFolder}/BlockFarmEditor/BlockFarmEditor.csproj"
         }
 
     ]
