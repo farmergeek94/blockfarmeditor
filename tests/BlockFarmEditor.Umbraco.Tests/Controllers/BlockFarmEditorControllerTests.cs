@@ -46,8 +46,6 @@ public class BlockFarmEditorControllerTests
             .Setup(x => x.EnsureUmbracoContext())
             .Returns(() => new UmbracoContextReference(_umbracoContext.Object, false, Mock.Of<IUmbracoContextAccessor>()));
 
-        _services.BlockDefinitionService.SetupGet(x => x.JsonSerializerReaderOptions).Returns(() => _services.ReaderOptions());
-        _services.BlockDefinitionService.SetupGet(x => x.JsonSerializerWriterOptions).Returns(() => _services.WriterOptions());
         _services.BlockDefinitionService
             .Setup(x => x.RetrieveBlockFarmEditorDefinitions(It.IsAny<bool>()))
             .Returns(() => _definitions.ToDictionary(x => x.ContentType!.Key, x => x));
@@ -58,6 +56,7 @@ public class BlockFarmEditorControllerTests
             _umbracoContextFactory.Object,
             _blockFarmEditorContext.Object,
             _services.BlockDefinitionService.Object,
+            _services.Mapper,
             _layoutService.Object,
             _database.ToFactory().Object,
             Mock.Of<IFileService>(),
@@ -236,7 +235,7 @@ public class BlockFarmEditorControllerTests
     /// <summary>A block type that exists both as a published element type and as a backoffice content type.</summary>
     private Guid AddBlockType(string alias, Type? viewComponentType = null, string viewPath = "~/Views/Partials/Hero.cshtml")
     {
-        var contentTypeKey = _services.AddPublishedElementType(("title", typeof(string)));
+        var contentTypeKey = _services.AddPublishedElementType("title");
         _definitions.Add(Definitions.Expanded(alias, contentTypeKey, viewPath: viewPath, viewComponentType: viewComponentType));
         return contentTypeKey;
     }
@@ -341,7 +340,7 @@ public class BlockFarmEditorControllerTests
     {
         var pageKey = Guid.NewGuid();
         AddPage(pageKey);
-        var contentTypeKey = _services.AddPublishedElementType(("title", typeof(string)));
+        var contentTypeKey = _services.AddPublishedElementType("title");
 
         var result = Assert.IsType<ContentResult>(await Controller(BlockJson(contentTypeKey)).RenderBlock(pageKey, null));
 

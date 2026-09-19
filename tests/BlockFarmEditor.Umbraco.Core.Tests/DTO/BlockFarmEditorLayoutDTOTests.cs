@@ -70,7 +70,7 @@ public class BlockFarmEditorLayoutDTOTests
         Assert.Equal(original.UpdatedBy, clone.UpdatedBy);
     }
 
-    [Fact(Skip = "Known bug: BlockFarmEditorLayoutDTO.DeepClone does not copy CreateDate/UpdateDate/DeleteDate (BlockFarmEditorDefinitionDTO.DeepClone does).")]
+    [Fact]
     public void DeepClone_CopiesAuditDates()
     {
         var original = Create();

@@ -1,7 +1,9 @@
-using System.Text.Json;
 using BlockFarmEditor.Umbraco.Core.Models.BuilderModels;
 using BlockFarmEditor.Umbraco.Library.Converters;
+using BlockFarmEditor.Umbraco.Library.Models;
+using BlockFarmEditor.Umbraco.Library.Services;
 using BlockFarmEditor.Umbraco.Tests.Helpers;
+using Microsoft.Extensions.Logging.Abstractions;
 using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Cms.Core.PropertyEditors;
 
@@ -10,19 +12,21 @@ namespace BlockFarmEditor.Umbraco.Tests.Converters;
 public class BlockFarmEditorUmbracoConverterTests
 {
     private readonly BlockFarmServiceProvider _services = new();
-    private readonly BlockFarmEditorUmbracoConverter _converter;
     private readonly IPublishedElement _owner = Mock.Of<IPublishedElement>();
+    private int _mapperResolutions;
 
-    public BlockFarmEditorUmbracoConverterTests()
-    {
-        _services.BlockDefinitionService.SetupGet(x => x.JsonSerializerReaderOptions).Returns(() => _services.ReaderOptions());
-        _converter = new BlockFarmEditorUmbracoConverter(_services.BlockDefinitionService.Object);
-    }
+    private BlockFarmEditorUmbracoConverter Converter(IBlockPropertyValueMapper? mapper = null) =>
+        new(new Lazy<IBlockPropertyValueMapper>(() =>
+        {
+            _mapperResolutions++;
+            return mapper ?? _services.Mapper;
+        }), NullLogger<BlockFarmEditorUmbracoConverter>.Instance);
 
     private static IPublishedPropertyType PropertyType(string editorAlias = "blockfarmeditor_page_propertyeditor")
     {
         var propertyType = new Mock<IPublishedPropertyType>();
         propertyType.SetupGet(x => x.EditorAlias).Returns(editorAlias);
+        propertyType.SetupGet(x => x.Alias).Returns("blocks");
         return propertyType.Object;
     }
 
@@ -33,7 +37,7 @@ public class BlockFarmEditorUmbracoConverterTests
     [InlineData("", false)]
     public void IsConverter_OnlyForTheBlockFarmEditorPropertyEditor(string editorAlias, bool expected)
     {
-        Assert.Equal(expected, _converter.IsConverter(PropertyType(editorAlias)));
+        Assert.Equal(expected, Converter().IsConverter(PropertyType(editorAlias)));
     }
 
     [Fact]
@@ -45,64 +49,106 @@ public class BlockFarmEditorUmbracoConverterTests
     [Fact]
     public void PropertyValueType_IsPageDefinition_CachedPerElement()
     {
-        Assert.Equal(typeof(PageDefinition), _converter.GetPropertyValueType(PropertyType()));
-        Assert.Equal(PropertyCacheLevel.Element, _converter.GetPropertyCacheLevel(PropertyType()));
+        Assert.Equal(typeof(PageDefinition), Converter().GetPropertyValueType(PropertyType()));
+        Assert.Equal(PropertyCacheLevel.Element, Converter().GetPropertyCacheLevel(PropertyType()));
     }
 
     [Fact]
-    public void IsValue_OnlyForPageDefinitions()
+    public void Construction_DoesNotResolveTheMapper_BecauseThatWouldBeACircularDependency()
     {
-        Assert.True(_converter.IsValue(new PageDefinition(), PropertyValueLevel.Object));
-        Assert.False(_converter.IsValue(null, PropertyValueLevel.Source));
-        Assert.False(_converter.IsValue("{\"blocks\":[]}", PropertyValueLevel.Source));
+        // the mapper needs the published content type cache, which needs the property value converters
+        var converter = Converter();
+        converter.IsConverter(PropertyType());
+        converter.IsValue("{}", PropertyValueLevel.Source);
+
+        Assert.Equal(0, _mapperResolutions);
+    }
+
+    [Theory]
+    [InlineData("{\"blocks\":[]}", true)]
+    [InlineData("", false)]
+    [InlineData("   ", false)]
+    [InlineData(null, false)]
+    public void IsValue_AtSourceLevel_IsAnyNonEmptyJsonString(string? source, bool expected)
+    {
+        Assert.Equal(expected, Converter().IsValue(source, PropertyValueLevel.Source));
     }
 
     [Fact]
-    public void ConvertSourceToIntermediate_FromJsonString_ReturnsThePageDefinition()
+    public void IsValue_AtSourceLevel_IsNotAPageDefinition()
+    {
+        Assert.False(Converter().IsValue(new PageDefinition(), PropertyValueLevel.Source));
+    }
+
+    [Theory]
+    [InlineData(PropertyValueLevel.Inter)]
+    [InlineData(PropertyValueLevel.Object)]
+    public void IsValue_BeyondSourceLevel_IsOnlyAPageDefinition(PropertyValueLevel level)
+    {
+        Assert.True(Converter().IsValue(new PageDefinition(), level));
+        Assert.False(Converter().IsValue("{\"blocks\":[]}", level));
+        Assert.False(Converter().IsValue(null, level));
+    }
+
+    [Fact]
+    public void ConvertSourceToIntermediate_FromStoredJson_ReturnsThePageDefinition()
     {
         var area = Guid.NewGuid();
 
-        var result = _converter.ConvertSourceToIntermediate(_owner, PropertyType(), $$$"""{"blocks":[{"unique":"{{{area}}}","blocks":[]}]}""", false);
+        var result = Converter().ConvertSourceToIntermediate(_owner, PropertyType(), $$$"""{"blocks":[{"unique":"{{{area}}}","blocks":[]}]}""", false);
 
         var page = Assert.IsType<PageDefinition>(result);
         Assert.Equal(area, Assert.Single(page.Blocks).Unique);
     }
 
     [Fact]
-    public void ConvertSourceToIntermediate_FromJsonDocument_ReturnsThePageDefinition()
+    public void ConvertSourceToIntermediate_HandsTheParsedRootToTheMapper()
     {
-        var area = Guid.NewGuid();
-        using var document = JsonDocument.Parse($$$"""{"blocks":[{"unique":"{{{area}}}"}]}""");
+        var page = new PageDefinition();
+        BlockData? received = null;
+        var mapper = new Mock<IBlockPropertyValueMapper>();
+        mapper.Setup(x => x.ToPageDefinition(It.IsAny<BlockData>())).Callback((BlockData root) => received = root).Returns(page);
 
-        var result = _converter.ConvertSourceToIntermediate(_owner, PropertyType(), document, false);
+        var result = Converter(mapper.Object).ConvertSourceToIntermediate(_owner, PropertyType(), """{"unique":"abc","blocks":[{"unique":"def"}]}""", false);
 
-        var page = Assert.IsType<PageDefinition>(result);
-        Assert.Equal(area, Assert.Single(page.Blocks).Unique);
+        Assert.Same(page, result);
+        Assert.Equal("abc", received!.Unique);
+        Assert.Equal("def", Assert.Single(received.Blocks!)!.Unique);
     }
 
     [Theory]
     [InlineData("not json")]
-    [InlineData("")]
     [InlineData("[]")]
     [InlineData("{\"blocks\":\"nope\"}")]
     public void ConvertSourceToIntermediate_FromUnusableJson_ReturnsNull_InsteadOfThrowing(string source)
     {
-        Assert.Null(_converter.ConvertSourceToIntermediate(_owner, PropertyType(), source, false));
+        Assert.Null(Converter().ConvertSourceToIntermediate(_owner, PropertyType(), source, false));
     }
 
     [Fact]
-    public void ConvertSourceToIntermediate_FromAJsonDocumentThatIsNotAPage_ReturnsNull_InsteadOfThrowing()
+    public void ConvertSourceToIntermediate_WhenTheMapperFails_ReturnsNull_InsteadOfThrowing()
     {
-        using var document = JsonDocument.Parse("[1,2,3]");
+        var mapper = new Mock<IBlockPropertyValueMapper>();
+        mapper.Setup(x => x.ToPageDefinition(It.IsAny<BlockData>())).Throws(new InvalidOperationException("boom"));
 
-        Assert.Null(_converter.ConvertSourceToIntermediate(_owner, PropertyType(), document, false));
+        Assert.Null(Converter(mapper.Object).ConvertSourceToIntermediate(_owner, PropertyType(), "{}", false));
+    }
+
+    [Theory]
+    [InlineData("null")]
+    [InlineData("")]
+    [InlineData("  ")]
+    public void ConvertSourceToIntermediate_FromAnEmptyValue_ReturnsNull(string source)
+    {
+        Assert.Null(Converter().ConvertSourceToIntermediate(_owner, PropertyType(), source, false));
     }
 
     [Fact]
-    public void ConvertSourceToIntermediate_FromUnsupportedSourceTypes_ReturnsNull()
+    public void ConvertSourceToIntermediate_FromNonStringSources_ReturnsNull_WithoutTouchingTheMapper()
     {
-        Assert.Null(_converter.ConvertSourceToIntermediate(_owner, PropertyType(), null, false));
-        Assert.Null(_converter.ConvertSourceToIntermediate(_owner, PropertyType(), 42, false));
+        Assert.Null(Converter().ConvertSourceToIntermediate(_owner, PropertyType(), null, false));
+        Assert.Null(Converter().ConvertSourceToIntermediate(_owner, PropertyType(), 42, false));
+        Assert.Equal(0, _mapperResolutions);
     }
 
     [Fact]
@@ -110,7 +156,7 @@ public class BlockFarmEditorUmbracoConverterTests
     {
         var page = new PageDefinition();
 
-        Assert.Same(page, _converter.ConvertIntermediateToObject(_owner, PropertyType(), PropertyCacheLevel.Element, page, false));
-        Assert.Null(_converter.ConvertIntermediateToObject(_owner, PropertyType(), PropertyCacheLevel.Element, null, false));
+        Assert.Same(page, Converter().ConvertIntermediateToObject(_owner, PropertyType(), PropertyCacheLevel.Element, page, false));
+        Assert.Null(Converter().ConvertIntermediateToObject(_owner, PropertyType(), PropertyCacheLevel.Element, null, false));
     }
 }

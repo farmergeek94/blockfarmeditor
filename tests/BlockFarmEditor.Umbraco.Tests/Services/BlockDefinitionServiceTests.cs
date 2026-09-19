@@ -1,8 +1,6 @@
 using System.Linq.Expressions;
 using BlockFarmEditor.Umbraco.Core.DTO;
-using BlockFarmEditor.Umbraco.Core.Models.BuilderModels;
 using BlockFarmEditor.Umbraco.Core.Models.ConfigModels;
-using BlockFarmEditor.Umbraco.Library.Converters;
 using BlockFarmEditor.Umbraco.Library.Services;
 using BlockFarmEditor.Umbraco.Tests.Helpers;
 using Microsoft.Extensions.DependencyInjection;
@@ -427,41 +425,6 @@ public class BlockDefinitionServiceTests
         var editors = (await _service.RetrievePropertyEditors(block.Object.Key)).Single().Editors!;
 
         Assert.Equal(["title"], editors.Keys);
-    }
-
-    #endregion
-
-    #region Serializer options
-
-    [Fact]
-    public void ReaderOptions_UseCamelCase_AndTheBlockConverter()
-    {
-        var options = _service.JsonSerializerReaderOptions;
-
-        Assert.Same(System.Text.Json.JsonNamingPolicy.CamelCase, options.PropertyNamingPolicy);
-        Assert.Same(System.Text.Json.JsonNamingPolicy.CamelCase, options.DictionaryKeyPolicy);
-        Assert.False(options.WriteIndented);
-        Assert.IsType<BuilderPropertiesConverter>(Assert.Single(options.Converters));
-    }
-
-    [Fact]
-    public void WriterOptions_UseCamelCase_AndTheEditorValueConverter()
-    {
-        var options = _service.JsonSerializerWriterOptions;
-
-        Assert.Same(System.Text.Json.JsonNamingPolicy.CamelCase, options.PropertyNamingPolicy);
-        Assert.False(options.WriteIndented);
-        Assert.IsType<BuilderPropertiesWriter>(Assert.Single(options.Converters));
-    }
-
-    [Fact]
-    public void ReaderOptions_CanDeserializeAStoredPage()
-    {
-        var area = Guid.NewGuid();
-
-        var page = System.Text.Json.JsonSerializer.Deserialize<PageDefinition>($$$"""{"blocks":[{"unique":"{{{area}}}","blocks":[]}]}""", _service.JsonSerializerReaderOptions);
-
-        Assert.Equal(area, Assert.Single(page!.Blocks).Unique);
     }
 
     #endregion

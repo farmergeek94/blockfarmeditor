@@ -64,7 +64,7 @@ public class BlockFarmEditorDefinitionSerializerTests
         Assert.False(attribute.IsTwoPass);
     }
 
-    [Fact(Skip = "Suspected bug: the definition and layout serializers are registered with the same SyncSerializer id (9E50ED21-718F-4DA0-9307-1FC238A95ED7); uSync serializer ids are meant to be unique.")]
+    [Fact]
     public void SerializerId_IsNotSharedWithTheLayoutSerializer()
     {
         var definitionId = typeof(BlockFarmEditorDefinitionSerializer).GetCustomAttribute<SyncSerializerAttribute>()!.Id;

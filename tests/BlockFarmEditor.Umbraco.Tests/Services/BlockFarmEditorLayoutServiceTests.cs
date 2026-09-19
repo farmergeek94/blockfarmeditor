@@ -98,7 +98,7 @@ public class BlockFarmEditorLayoutServiceTests
         Assert.Equal(existing.Key, result.Key);
     }
 
-    [Fact(Skip = "Known bug: BlockFarmEditorLayoutService.UpdateAsync builds its return value from the pre-update row (only Icon comes from the new dto), so callers get stale data back.")]
+    [Fact]
     public async Task UpdateAsync_ReturnsTheUpdatedValues()
     {
         var existing = Dtos.Layout("Old name", category: "Old", id: 5);
@@ -118,7 +118,7 @@ public class BlockFarmEditorLayoutServiceTests
         Assert.False(result.Enabled);
     }
 
-    [Fact(Skip = "Known bug: BlockFarmEditorLayoutService.UpdateAsync ignores its updatedBy argument and never refreshes UpdateDate (the definition service does both).")]
+    [Fact]
     public async Task UpdateAsync_StampsTheUpdatingUserAndDate()
     {
         var user = Guid.NewGuid();

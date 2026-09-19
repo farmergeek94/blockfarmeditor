@@ -271,7 +271,7 @@ public class BlockFarmEditorLayoutControllerTests : BlockFarmEditorLayoutControl
         LayoutService.Verify(x => x.UpdateAsync(Database.Object, 5, layout, userKey), Times.Once);
     }
 
-    [Fact(Skip = "Known bug: BlockFarmEditorLayoutController.Update loads the layout by key and saves it back untouched - none of the request's fields (Description, Layout, Category, Type, Icon, Enabled) are applied.")]
+    [Fact]
     public async Task Update_AppliesTheRequestedChanges()
     {
         var layout = Dtos.Layout(id: 5);

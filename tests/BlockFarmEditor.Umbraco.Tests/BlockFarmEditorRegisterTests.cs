@@ -33,6 +33,7 @@ public class BlockFarmEditorRegisterTests
 
     [Theory]
     [InlineData(typeof(IBlockDefinitionService), typeof(BlockDefinitionService), ServiceLifetime.Singleton)]
+    [InlineData(typeof(IBlockPropertyValueMapper), typeof(BlockPropertyValueMapper), ServiceLifetime.Singleton)]
     [InlineData(typeof(IBlockFarmEditorDefinitionService), typeof(BlockFarmEditorDefinitionService), ServiceLifetime.Singleton)]
     [InlineData(typeof(IBlockFarmEditorLayoutService), typeof(BlockFarmEditorLayoutService), ServiceLifetime.Singleton)]
     [InlineData(typeof(IBlockFarmEditorRenderService), typeof(BlockFarmEditorRenderService), ServiceLifetime.Scoped)]
