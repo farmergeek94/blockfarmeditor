@@ -9,7 +9,6 @@ namespace BlockFarmEditor.Umbraco.Core.Interfaces
     public interface IBlockDefinitionService
     {
         JsonSerializerOptions JsonSerializerReaderOptions { get; }
-        JsonSerializerOptions JsonSerializerWriterOptions { get; }
 
         IDictionary<Guid, BlockFarmEditorDefinitionExpanded> RetrieveBlockFarmEditorDefinitions(bool force = false);
         Task<IEnumerable<BlockFarmEditorPropertyGroupModel>> RetrievePropertyEditors(Guid contentTypeKey);

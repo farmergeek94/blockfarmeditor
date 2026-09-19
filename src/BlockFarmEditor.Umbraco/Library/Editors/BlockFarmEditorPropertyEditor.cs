@@ -1,5 +1,5 @@
 ﻿using BlockFarmEditor.Umbraco.Core.Interfaces;
-using BlockFarmEditor.Umbraco.Library.Converters;
+using BlockFarmEditor.Umbraco.Library.Models;
 using BlockFarmEditor.Umbraco.Library.Services;
 using System;
 using System.Collections.Generic;
@@ -34,15 +34,20 @@ namespace BlockFarmEditor.Umbraco.Library.Editors
         IJsonSerializer jsonSerializer,
         IIOHelper ioHelper,
         DataEditorAttribute attribute,
-        IBlockDefinitionService blockDefinitionService
+        IBlockPropertyValueMapper blockPropertyValueMapper
             ) : DataValueEditor(shortStringHelper, jsonSerializer, ioHelper, attribute)
     {
         public override object? FromEditor(ContentPropertyData editorValue, object? currentValue)
         {
             object? value = editorValue.Value;
-            if (editorValue.Value is JsonNode obj)
+            if (editorValue.Value is JsonObject obj && BlockData.Parse(obj) is BlockData blockData)
             {
-                value = JsonSerializer.Serialize(obj, blockDefinitionService.JsonSerializerWriterOptions);
+                blockPropertyValueMapper.FromEditor(blockData);
+                value = blockData.ToJson();
+            }
+            else if (editorValue.Value is JsonNode node)
+            {
+                value = node.ToJsonString();
             }
 
             ContentPropertyData contentPropertyData = new(value, editorValue.DataTypeConfiguration);
@@ -61,8 +66,13 @@ namespace BlockFarmEditor.Umbraco.Library.Editors
             {
                 strValue = value?.ToString() ?? "";
             }
-            var result = JsonSerializer.Deserialize<JsonNode>(strValue, blockDefinitionService.JsonSerializerWriterOptions);
-            return result;
+            var result = JsonNode.Parse(strValue);
+            if (result is not JsonObject || BlockData.Parse(result) is not BlockData blockData)
+            {
+                return result;
+            }
+            blockPropertyValueMapper.ToEditor(blockData);
+            return blockData.ToJsonNode();
         }
     }
 }

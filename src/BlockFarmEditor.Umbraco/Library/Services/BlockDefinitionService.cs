@@ -281,8 +281,9 @@ namespace BlockFarmEditor.Umbraco.Library.Services
         }
 
         // setup the converters for the serializer
-        // this allows us to serilize and deserilize using the concrete types.
-        public JsonSerializerOptions JsonSerializerReaderOptions => new()
+        // this allows us to deserialize the stored json into the published models.
+        // The options are cached as System.Text.Json caches its type metadata per options instance, and lazy as the converter depends on services that depend on this one.
+        private readonly Lazy<JsonSerializerOptions> _jsonSerializerReaderOptions = new(() => new()
         {
             WriteIndented = false,
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
@@ -290,17 +291,8 @@ namespace BlockFarmEditor.Umbraco.Library.Services
             Converters = {
                 new BuilderPropertiesConverter(serviceProvider)
             }
-        };
+        });
 
-        // setup the converters for the serializer
-        // this allows us to serilize and deserilize using the concrete types.
-        public JsonSerializerOptions JsonSerializerWriterOptions => new()
-        {
-            WriteIndented = false,
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            Converters = {
-                new BuilderPropertiesWriter(serviceProvider)
-            }
-        };
+        public JsonSerializerOptions JsonSerializerReaderOptions => _jsonSerializerReaderOptions.Value;
     }
 }

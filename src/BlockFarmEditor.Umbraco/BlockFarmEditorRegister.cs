@@ -15,6 +15,7 @@ namespace BlockFarmEditor.Umbraco
         public static IUmbracoBuilder AddBlockFarmEditor(this IUmbracoBuilder builder)
         {
             builder.Services.AddSingleton<IBlockDefinitionService, BlockDefinitionService>();
+            builder.Services.AddSingleton<IBlockPropertyValueMapper, BlockPropertyValueMapper>();
             builder.Services.AddSingleton<IBlockFarmEditorDefinitionService, BlockFarmEditorDefinitionService>();
             builder.Services.AddSingleton<IBlockFarmEditorLayoutService, BlockFarmEditorLayoutService>();
             builder.Services.AddScoped<IBlockFarmEditorRenderService, BlockFarmEditorRenderService>();
