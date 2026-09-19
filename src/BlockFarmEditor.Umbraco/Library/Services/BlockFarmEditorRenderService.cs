@@ -1,24 +1,26 @@
 ﻿using BlockFarmEditor.Umbraco.Core.Interfaces;
 using BlockFarmEditor.Umbraco.Core.Models.BuilderModels;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using System.Text;
 using Umbraco.Cms.Core.Models.PublishedContent;
 
 namespace BlockFarmEditor.Umbraco.Library.Services
 {
-    internal class BlockFarmEditorRenderService(IBlockDefinitionService serializerService, ILogger<BlockFarmEditorRenderService> logger) : IBlockFarmEditorRenderService
+    internal class BlockFarmEditorRenderService(IBlockDefinitionService serializerService, IBlockFarmEditorContext blockFarmEditorContext, ILogger<BlockFarmEditorRenderService> logger) : IBlockFarmEditorRenderService
     {
         public async Task<IHtmlContent?> RenderComponent<T>(IHtmlHelper htmlHelper, BlockDefinition<T> element) where T : IPublishedElement
         {
-            var definitions = serializerService.RetrieveBlockFarmEditorDefinitions();
-
             IHtmlContent? renderedComponent = null;
             try
             {
+                var definitions = serializerService.RetrieveBlockFarmEditorDefinitions();
+
                 if (definitions.TryGetValue(element.ContentTypeKey!.Value, out var definition))
                 {
                     if (definition.DefinitionAttribute?.ViewComponentType != null)
@@ -71,16 +73,72 @@ namespace BlockFarmEditor.Umbraco.Library.Services
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Error rendering component for block type {BlockType}", element.ContentTypeKey);
-                
+                var message = GetErrorMessage(ex);
+                logger.LogError(ex, "Error rendering component for block type {BlockType}: {ErrorMessage}", element.ContentTypeKey, message);
+
                 var div = new TagBuilder("div");
-                div.AddCssClass("block-render-error");
-                div.Attributes["style"] = "display:none;";
-                div.InnerHtml.Append($"Error rendering block of type {element.ContentTypeKey}: {ex.Message}");
+                div.AddCssClass("alert alert-danger");
+                div.AddCssClass("m-2");
+                if (blockFarmEditorContext.IsPreview)
+                {
+                    // Preserve the line breaks of multi-line (compilation) errors
+                    div.Attributes["style"] = "white-space:pre-wrap;";                
+                    div.InnerHtml.Append($"Error rendering block of type {element.ContentTypeKey}: {message}");
+                }
+                else
+                {
+                    // Never show error details on the public facing site
+                    div.Attributes["style"] = "display:none;";
+                    div.InnerHtml.Append($"Error rendering block of type {element.ContentTypeKey}");
+                }
 
                 renderedComponent = div;
             }
             return renderedComponent;
+        }
+
+        /// <summary>
+        /// Builds the error message, expanding the individual compiler diagnostics for compilation exceptions
+        /// (e.g. UmbracoCompilationException), whose own message doesn't say what actually failed.
+        /// </summary>
+        private static string GetErrorMessage(Exception ex)
+        {
+            // UmbracoCompilationException lives in Umbraco.Cms.DevelopmentMode.Backoffice, so match on the interface it implements instead.
+            ICompilationException? compilationException = null;
+            for (var current = ex; current != null && compilationException == null; current = current.InnerException)
+            {
+                compilationException = current as ICompilationException;
+            }
+
+            if (compilationException?.CompilationFailures == null)
+            {
+                return ex.Message;
+            }
+
+            var builder = new StringBuilder(ex.Message);
+            foreach (var failure in compilationException.CompilationFailures)
+            {
+                if (failure == null)
+                {
+                    continue;
+                }
+
+                if (!string.IsNullOrEmpty(failure.FailureSummary))
+                {
+                    builder.AppendLine().Append(failure.FailureSummary);
+                }
+
+                foreach (var diagnostic in failure.Messages ?? [])
+                {
+                    if (diagnostic == null)
+                    {
+                        continue;
+                    }
+
+                    builder.AppendLine().Append(diagnostic.FormattedMessage ?? $"{diagnostic.SourceFilePath ?? failure.SourceFilePath}({diagnostic.StartLine},{diagnostic.StartColumn}): {diagnostic.Message}");
+                }
+            }
+            return builder.ToString();
         }
     }
 }

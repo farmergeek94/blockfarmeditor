@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\BlockFarmEditor.Umbraco.Core\BlockFarmEditor.Umbraco.Core.csproj" />
+  </ItemGroup>
+
+</Project>

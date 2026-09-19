@@ -1,5 +1,7 @@
 ﻿using BlockFarmEditor.Umbraco.Core.Interfaces;
 using BlockFarmEditor.Umbraco.Core.Models.BuilderModels;
+using BlockFarmEditor.Umbraco.Library.Models;
+using BlockFarmEditor.Umbraco.Library.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -19,6 +21,7 @@ namespace BlockFarmEditor.Umbraco.Controllers
     public class BlockFarmEditorController(IUmbracoContextFactory umbracoContextFactory
         , IBlockFarmEditorContext blockFarmEditorContext
         , IBlockDefinitionService blockDefinitionService
+        , IBlockPropertyValueMapper blockPropertyValueMapper
         , IBlockFarmEditorLayoutService blockFarmEditorLayoutService
         , IUmbracoDatabaseFactory umbracoDatabaseFactory
         , IFileService fileService
@@ -54,12 +57,13 @@ namespace BlockFarmEditor.Umbraco.Controllers
 
                     await blockFarmEditorContext.SetPageDefinition(umbracoContext, content, Request.Host.Host, culture: culture, true, true);
 
-                    var jsonNode = JsonSerializer.Deserialize<JsonNode>(bodyString, blockDefinitionService.JsonSerializerReaderOptions);
-                    if (jsonNode != null)
+                    var blockData = BlockData.Parse(bodyString);
+                    if (blockData != null)
                     {
-                        var jsonNodeSeriliazed = JsonSerializer.Serialize(jsonNode, blockDefinitionService.JsonSerializerWriterOptions);
+                        // the editor sends editor values, so convert them to stored values before building the published block.
+                        blockPropertyValueMapper.FromEditor(blockData);
 
-                        BlockDefinition<IPublishedElement>? blockDefinition = JsonSerializer.Deserialize<BlockDefinition<IPublishedElement>>(jsonNodeSeriliazed, blockDefinitionService.JsonSerializerReaderOptions);
+                        var blockDefinition = blockPropertyValueMapper.ToBlockDefinition(blockData);
                         if (blockDefinition != null)
                         {
                             return RenderBlock(blockDefinition);

@@ -98,7 +98,10 @@ namespace BlockFarmEditor.Umbraco.Core.DTO
                 Icon = this.Icon,
                 Enabled = this.Enabled,
                 CreatedBy = this.CreatedBy,
-                UpdatedBy = this.UpdatedBy
+                UpdatedBy = this.UpdatedBy,
+                CreateDate = this.CreateDate,
+                UpdateDate = this.UpdateDate,
+                DeleteDate = this.DeleteDate
             };
         }
 

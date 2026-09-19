@@ -11,7 +11,7 @@ using uSync.Core.Serialization;
 
 namespace BlockFarmEditor.USync.BlockFarmEditorLayouts
 {
-    [SyncSerializer("9E50ED21-718F-4DA0-9307-1FC238A95ED7", "BlockFarmEditor Layout Serializer", BlockFarmEditorLayoutDTO.TableName, IsTwoPass = false)]
+    [SyncSerializer("1C9DCF3B-FD88-4F83-9A14-5E2B496248E6", "BlockFarmEditor Layout Serializer", BlockFarmEditorLayoutDTO.TableName, IsTwoPass = false)]
     public class BlockFarmEditorLayoutSerializer(IEntityService entityService, ILogger<SyncSerializerBase<BlockFarmEditorLayoutDTO>> logger, IUmbracoDatabaseFactory umbracoDatabaseFactory, IBlockFarmEditorLayoutService blockFarmEditorLayoutService, IUserService userService) : SyncSerializerBase<BlockFarmEditorLayoutDTO>(entityService, logger), ISyncSerializer<BlockFarmEditorLayoutDTO>
     {
         public override async Task DeleteItemAsync(BlockFarmEditorLayoutDTO item)

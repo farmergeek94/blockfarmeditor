@@ -4,12 +4,10 @@ using BlockFarmEditor.Umbraco.Core.Interfaces;
 using BlockFarmEditor.Umbraco.Core.Models;
 using BlockFarmEditor.Umbraco.Core.Models.BuilderModels;
 using BlockFarmEditor.Umbraco.Core.Models.ConfigModels;
-using BlockFarmEditor.Umbraco.Library.Converters;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
 using System.Reflection;
-using System.Text.Json;
 using Umbraco.Cms.Core.Composing;
 using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.Models.ContentTypeEditing;
@@ -279,28 +277,5 @@ namespace BlockFarmEditor.Umbraco.Library.Services
             }
             return [];
         }
-
-        // setup the converters for the serializer
-        // this allows us to serilize and deserilize using the concrete types.
-        public JsonSerializerOptions JsonSerializerReaderOptions => new()
-        {
-            WriteIndented = false,
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            DictionaryKeyPolicy = JsonNamingPolicy.CamelCase,
-            Converters = {
-                new BuilderPropertiesConverter(serviceProvider)
-            }
-        };
-
-        // setup the converters for the serializer
-        // this allows us to serilize and deserilize using the concrete types.
-        public JsonSerializerOptions JsonSerializerWriterOptions => new()
-        {
-            WriteIndented = false,
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            Converters = {
-                new BuilderPropertiesWriter(serviceProvider)
-            }
-        };
     }
 }
