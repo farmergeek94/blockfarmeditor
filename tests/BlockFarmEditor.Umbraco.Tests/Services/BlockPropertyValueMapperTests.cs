@@ -62,7 +62,8 @@ public class BlockPropertyValueMapperTests
     {
         ContentTypeKey = contentTypeKey.ToString(),
         Unique = Guid.NewGuid().ToString(),
-        Properties = properties.ToDictionary(x => x.Key, x => x.Value?.DeepClone()),
+        // parsed, so the values are the clr values they would be when read from the editor or the database
+        Properties = BlockData.Parse(new JsonObject { ["properties"] = properties.DeepClone() })!.Properties,
         Blocks = [.. blocks]
     };
 
@@ -74,6 +75,8 @@ public class BlockPropertyValueMapperTests
         {
             [ContentTypeAlias] = [new BlockFarmEditorConfigurationAttribute(ContentTypeAlias, propertyAlias, typeof(ThemeConfig))]
         });
+
+    private static string Json(object? value) => System.Text.Json.JsonSerializer.Serialize(value, BlockData.SerializerOptions);
 
     private static object? SourceValue(IPublishedElement element, string alias) => element.Properties.Single(x => x.Alias == alias).GetSourceValue();
 
@@ -90,7 +93,7 @@ public class BlockPropertyValueMapperTests
 
         _services.Mapper.FromEditor(block);
 
-        Assert.Equal("stored:Hello", block.Properties!["title"]!.GetValue<string>());
+        Assert.Equal("stored:Hello", block.Properties!["title"]);
         Assert.Equal(contentTypeKey, block.ContentTypeKey);
         Assert.Equal(unique, block.Unique);
     }
@@ -105,8 +108,8 @@ public class BlockPropertyValueMapperTests
 
         _services.Mapper.FromEditor(Container(Container(outer)));
 
-        Assert.Equal("stored:outer", outer.Properties!["title"]!.GetValue<string>());
-        Assert.Equal("stored:inner", inner.Properties!["title"]!.GetValue<string>());
+        Assert.Equal("stored:outer", outer.Properties!["title"]);
+        Assert.Equal("stored:inner", inner.Properties!["title"]);
     }
 
     [Fact]
@@ -126,11 +129,11 @@ public class BlockPropertyValueMapperTests
     public void FromEditor_BlockWithoutAValidContentTypeKey_KeepsItsPropertiesUntouched(string? contentTypeKey)
     {
         _services.AddEditor(UmbracoModels.TextBoxEditorAlias, fromEditor: value => $"stored:{value}");
-        var block = new BlockData { ContentTypeKey = contentTypeKey, Properties = new Dictionary<string, JsonNode?> { ["title"] = "Hello" } };
+        var block = new BlockData { ContentTypeKey = contentTypeKey, Properties = new Dictionary<string, object?> { ["title"] = "Hello" } };
 
         _services.Mapper.FromEditor(block);
 
-        Assert.Equal("Hello", block.Properties["title"]!.GetValue<string>());
+        Assert.Equal("Hello", block.Properties!["title"]);
         _services.ContentTypeService.VerifyNoOtherCalls();
     }
 
@@ -141,7 +144,7 @@ public class BlockPropertyValueMapperTests
 
         _services.Mapper.FromEditor(block);
 
-        Assert.Equal("Hello", block.Properties!["title"]!.GetValue<string>());
+        Assert.Equal("Hello", block.Properties!["title"]);
     }
 
     [Theory]
@@ -149,9 +152,8 @@ public class BlockPropertyValueMapperTests
     [InlineData(ValueTypes.String, "42", typeof(int), "42")]
     [InlineData(ValueTypes.Integer, "99999999999", typeof(long), "99999999999")]
     [InlineData(ValueTypes.String, "12.5", typeof(double), "12.5")]
-    [InlineData(ValueTypes.Decimal, "12.5", typeof(decimal), "12.5")]
-    [InlineData(ValueTypes.Decimal, "0.1234567890123456789012345678", typeof(decimal), "0.1234567890123456789012345678")]
-    [InlineData(ValueTypes.Decimal, "7", typeof(decimal), "7")]
+    [InlineData(ValueTypes.Decimal, "12.5", typeof(double), "12.5")]
+    [InlineData(ValueTypes.Decimal, "7", typeof(int), "7")]
     [InlineData(ValueTypes.String, "true", typeof(bool), "True")]
     [InlineData(ValueTypes.String, "false", typeof(bool), "False")]
     [InlineData(ValueTypes.String, "\"text\"", typeof(string), "text")]
@@ -177,7 +179,7 @@ public class BlockPropertyValueMapperTests
         _services.Mapper.FromEditor(block);
 
         Assert.IsAssignableFrom<JsonNode>(Assert.Single(_services.FromEditorCalls).Value);
-        Assert.Equal("""{"url":"/about"}""", block.Properties!["link"]!.ToJsonString());
+        Assert.Equal("""{"url":"/about"}""", Json(block.Properties!["link"]));
     }
 
     [Fact]
@@ -188,7 +190,7 @@ public class BlockPropertyValueMapperTests
 
         _services.Mapper.FromEditor(block);
 
-        Assert.Equal("""["a","b"]""", block.Properties!["tags"]!.ToJsonString());
+        Assert.Equal("""["a","b"]""", Json(block.Properties!["tags"]));
     }
 
     [Fact]
@@ -387,8 +389,8 @@ public class BlockPropertyValueMapperTests
 
         _services.Mapper.ToEditor(Container(outer));
 
-        Assert.Equal("editor:outer", outer.Properties!["title"]!.GetValue<string>());
-        Assert.Equal("editor:inner", inner.Properties!["title"]!.GetValue<string>());
+        Assert.Equal("editor:outer", outer.Properties!["title"]);
+        Assert.Equal("editor:inner", inner.Properties!["title"]);
     }
 
     [Fact]
@@ -412,11 +414,26 @@ public class BlockPropertyValueMapperTests
 
         _services.Mapper.ToEditor(block);
 
-        Assert.Equal("Hello", block.Properties!["title"]!.GetValue<string>());
+        Assert.Equal("Hello", block.Properties!["title"]);
     }
 
     [Fact]
-    public void ToEditor_AJsonNodeAlreadyAttachedElsewhere_IsCopied_RatherThanFailing()
+    public void ToEditor_PropertyThatVariesByCulture_KeepsItsValue_BecauseBlocksAreStoredInvariantly()
+    {
+        _services.AddEditor(UmbracoModels.TextBoxEditorAlias);
+        var propertyType = UmbracoModels.PropertyType("title");
+        propertyType.Variations = ContentVariation.CultureAndSegment;
+        var block = Block(AddContentType(propertyType), new JsonObject { ["title"] = "Hello" });
+
+        _services.Mapper.ToEditor(block);
+
+        Assert.Equal("Hello", block.Properties!["title"]);
+        // the content type service hands out cached instances, so the variance is ignored on a copy
+        Assert.Equal(ContentVariation.CultureAndSegment, propertyType.Variations);
+    }
+
+    [Fact]
+    public void ToEditor_AJsonNodeAlreadyAttachedElsewhere_IsSerialized_RatherThanFailing()
     {
         var owner = new JsonObject { ["shared"] = new JsonObject { ["url"] = "/about" } };
         _services.AddEditor(UmbracoModels.TextBoxEditorAlias, toEditor: _ => owner["shared"]);
@@ -424,7 +441,7 @@ public class BlockPropertyValueMapperTests
 
         _services.Mapper.ToEditor(block);
 
-        Assert.Equal("""{"url":"/about"}""", block.Properties!["link"]!.ToJsonString());
+        Assert.Equal("""{"url":"/about"}""", Json(block.Properties!["link"]));
         Assert.NotNull(owner["shared"]);
         Assert.NotNull(block.ToJson());
     }
@@ -439,8 +456,8 @@ public class BlockPropertyValueMapperTests
         var stored = BlockData.Parse(block.ToJson())!;
         _services.Mapper.ToEditor(stored);
 
-        Assert.Equal("[Hello]", block.Properties!["title"]!.GetValue<string>());
-        Assert.Equal("Hello", stored.Properties!["title"]!.GetValue<string>());
+        Assert.Equal("[Hello]", block.Properties!["title"]);
+        Assert.Equal("Hello", stored.Properties!["title"]);
     }
 
     #endregion
@@ -523,7 +540,7 @@ public class BlockPropertyValueMapperTests
 
         Assert.Equal("Hello", SourceValue(block.Properties!, "text"));
         Assert.Equal(3, SourceValue(block.Properties!, "count"));
-        Assert.Equal(12.5m, SourceValue(block.Properties!, "price"));
+        Assert.Equal(12.5, SourceValue(block.Properties!, "price"));
         Assert.Equal(true, SourceValue(block.Properties!, "yes"));
         Assert.Null(SourceValue(block.Properties!, "nothing"));
         Assert.Equal("""{"url":"/about"}""", Assert.IsAssignableFrom<JsonNode>(SourceValue(block.Properties!, "link")).ToJsonString());

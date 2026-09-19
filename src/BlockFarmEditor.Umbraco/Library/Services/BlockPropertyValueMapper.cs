@@ -5,8 +5,6 @@ using BlockFarmEditor.Umbraco.Core.Models.ConfigModels;
 using BlockFarmEditor.Umbraco.Library.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using System.Text.Json;
-using System.Text.Json.Nodes;
 using Umbraco.Cms.Core.Cache;
 using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.Models.Editors;
@@ -28,7 +26,6 @@ namespace BlockFarmEditor.Umbraco.Library.Services
         PropertyEditorCollection propertyEditors,
         IDataTypeConfigurationCache dataTypeConfigurationCache,
         IConfigurationEditorJsonSerializer configurationEditorJsonSerializer,
-        IJsonSerializer jsonSerializer,
         IBlockDefinitionService blockDefinitionService,
         ILogger<BlockPropertyValueMapper> logger) : IBlockPropertyValueMapper
     {
@@ -66,9 +63,9 @@ namespace BlockFarmEditor.Umbraco.Library.Services
             block.Properties = MapProperties(contentType, block.Properties, context);
         }
 
-        private Dictionary<string, JsonNode?> MapProperties(IContentType contentType, Dictionary<string, JsonNode?> properties, MapContext context)
+        private Dictionary<string, object?> MapProperties(IContentType contentType, Dictionary<string, object?> properties, MapContext context)
         {
-            var result = new Dictionary<string, JsonNode?>();
+            var result = new Dictionary<string, object?>();
 
             foreach (var propertyType in contentType.CompositionPropertyTypes)
             {
@@ -88,21 +85,17 @@ namespace BlockFarmEditor.Umbraco.Library.Services
                     }
 
                     var valueEditor = propertyEditor.GetValueEditor();
-                    var value = ToClrValue(property.Value, valueEditor.ValueType);
 
-                    object? mappedValue;
                     if (context.ToEditor)
                     {
-                        var propertyValue = Property.CreateWithValues(-1, propertyType, new Property.InitialPropertyValue(null, null, false, value));
-                        mappedValue = valueEditor.ToEditor(propertyValue);
+                        var propertyValue = Property.CreateWithValues(-1, AsInvariant(propertyType), new Property.InitialPropertyValue(null, null, false, property.Value));
+                        result[property.Key] = valueEditor.ToEditor(propertyValue);
                     }
                     else
                     {
                         var configuration = GetConfiguration(contentType, propertyType, propertyEditor, context);
-                        mappedValue = valueEditor.FromEditor(new ContentPropertyData(value, configuration), value);
+                        result[property.Key] = valueEditor.FromEditor(new ContentPropertyData(property.Value, configuration), property.Value);
                     }
-
-                    result[property.Key] = ToJsonNode(mappedValue);
                 }
                 catch (Exception ex)
                 {
@@ -110,6 +103,20 @@ namespace BlockFarmEditor.Umbraco.Library.Services
                 }
             }
             return result;
+        }
+
+        // Block values are stored invariantly in the page json, so variance on the element type is ignored - a property will not hand back an invariant value for a type that varies by culture.
+        private static IPropertyType AsInvariant(IPropertyType propertyType)
+        {
+            if (!propertyType.VariesByCulture())
+            {
+                return propertyType;
+            }
+
+            // the content type service hands out cached instances, so the variance is changed on a copy.
+            var invariant = (IPropertyType)propertyType.DeepClone();
+            invariant.Variations = ContentVariation.Nothing;
+            return invariant;
         }
 
         public PageDefinition ToPageDefinition(BlockData root)
@@ -162,10 +169,8 @@ namespace BlockFarmEditor.Umbraco.Library.Services
                         continue;
                     }
 
-                    var valueType = propertyEditors.TryGet(propertyType.EditorAlias, out var propertyEditor) ? propertyEditor.GetValueEditor().ValueType : null;
-
                     // Store the source value - let Umbraco's property value converters handle the rest
-                    sourceValues[propertyType.Alias] = ToClrValue(property.Value, valueType);
+                    sourceValues[propertyType.Alias] = property.Value;
                 }
             }
 
@@ -176,32 +181,6 @@ namespace BlockFarmEditor.Umbraco.Library.Services
 
             return result;
         }
-
-        // Same conversion the management api uses when handing values to the value editors: numbers, bools and strings become their clr types, objects and arrays stay json.
-        private object? ToClrValue(JsonNode? node, string? valueType)
-        {
-            if (node == null)
-            {
-                return null;
-            }
-
-            // json has no decimal, so read it directly rather than lose precision going through a double.
-            if (valueType.InvariantEquals(ValueTypes.Decimal)
-                && node.GetValueKind() == JsonValueKind.Number
-                && decimal.TryParse(node.ToJsonString(), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var decimalValue))
-            {
-                return decimalValue;
-            }
-
-            return jsonSerializer.Deserialize<object>(node.ToJsonString());
-        }
-
-        private static JsonNode? ToJsonNode(object? value) => value switch
-        {
-            null => null,
-            JsonNode node => node.Parent == null ? node : node.DeepClone(),
-            _ => JsonSerializer.SerializeToNode(value, value.GetType(), BlockData.SerializerOptions)
-        };
 
         private object? GetConfiguration(IContentType contentType, IPropertyType propertyType, IDataEditor propertyEditor, MapContext context)
         {

@@ -61,7 +61,6 @@ internal sealed class BlockFarmServiceProvider
             new PropertyEditorCollection(new DataEditorCollection(() => DataEditors)),
             DataTypeConfigurationCache.Object,
             Mock.Of<IConfigurationEditorJsonSerializer>(),
-            JsonSerializer,
             BlockDefinitionService.Object,
             NullLogger<BlockPropertyValueMapper>.Instance));
     }

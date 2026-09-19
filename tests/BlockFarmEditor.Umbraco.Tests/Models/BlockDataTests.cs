@@ -17,10 +17,26 @@ public class BlockDataTests
         Assert.Equal("ctk", block.ContentTypeKey);
         Assert.Equal("u1", block.Unique);
         Assert.Equal(["title", "count", "link", "nothing"], block.Properties!.Keys);
-        Assert.Equal("Hello", block.Properties["title"]!.GetValue<string>());
-        Assert.Equal("/about", block.Properties["link"]!["url"]!.GetValue<string>());
+        Assert.Equal("Hello", block.Properties["title"]);
+        Assert.Equal(3, block.Properties["count"]);
+        Assert.Equal("/about", Assert.IsType<JsonObject>(block.Properties["link"])["url"]!.GetValue<string>());
         Assert.Null(block.Properties["nothing"]);
         Assert.Equal("u3", block.Blocks!.Single()!.Blocks!.Single()!.Unique);
+    }
+
+    [Fact]
+    public void Parse_ReadsPropertyValues_LikeUmbracoReadsItsOwn()
+    {
+        var properties = BlockData.Parse("""{"properties":{"whole":7,"big":99999999999,"fraction":12.5,"flag":true,"tags":["a","b"],"links":[{"url":"/"}],"empty":[]}}""")!.Properties!;
+
+        Assert.Equal(7, properties["whole"]);
+        Assert.Equal(99999999999L, properties["big"]);
+        Assert.Equal(12.5, properties["fraction"]);
+        Assert.Equal(true, properties["flag"]);
+        Assert.Equal(["a", "b"], Assert.IsType<List<string>>(properties["tags"]));
+        Assert.IsType<JsonArray>(properties["links"]);
+        // umbraco's converter cannot tell what an empty array holds, so it reads it as null
+        Assert.Null(properties["empty"]);
     }
 
     [Theory]
@@ -67,7 +83,7 @@ public class BlockDataTests
     [Fact]
     public void ToJson_KeepsNullPropertyValues()
     {
-        var block = new BlockData { Properties = new Dictionary<string, JsonNode?> { ["title"] = null } };
+        var block = new BlockData { Properties = new Dictionary<string, object?> { ["title"] = null } };
 
         Assert.Equal("""{"properties":{"title":null}}""", block.ToJson());
     }
@@ -75,7 +91,7 @@ public class BlockDataTests
     [Fact]
     public void ToJson_KeepsPropertyAliasCasing()
     {
-        var block = new BlockData { Properties = new Dictionary<string, JsonNode?> { ["MyTitle"] = "x" } };
+        var block = new BlockData { Properties = new Dictionary<string, object?> { ["MyTitle"] = "x" } };
 
         Assert.Equal("""{"properties":{"MyTitle":"x"}}""", block.ToJson());
     }

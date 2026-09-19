@@ -1,6 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
+using Umbraco.Cms.Infrastructure.Serialization;
 
 namespace BlockFarmEditor.Umbraco.Library.Models
 {
@@ -13,7 +14,9 @@ namespace BlockFarmEditor.Umbraco.Library.Models
         public static readonly JsonSerializerOptions SerializerOptions = new()
         {
             WriteIndented = false,
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            // the converter umbraco reads its own property values with: numbers, bools and strings become their clr types, objects and arrays stay json.
+            Converters = { new JsonObjectConverter() }
         };
 
         // kept as strings so that an empty or malformed value from the editor never fails the whole tree.
@@ -24,7 +27,7 @@ namespace BlockFarmEditor.Umbraco.Library.Models
         public string? Unique { get; set; }
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public Dictionary<string, JsonNode?>? Properties { get; set; }
+        public Dictionary<string, object?>? Properties { get; set; }
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public List<BlockData?>? Blocks { get; set; }
